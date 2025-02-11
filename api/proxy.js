@@ -17,12 +17,20 @@ app.get('/api/proxy.js', async (req, res) => {
         return res.status(400).json({ error: 'Missing query parameter: q' });
     }
 
+    const allowedHostnames = ['example.com', 'searx.be'];
+
     try {
-        let targetUrl = q;
+        let targetUrl;
 
         if (search === 'true') {
             const searxInstance = 'https://searx.be';
             targetUrl = `${searxInstance}/search?q=${encodeURIComponent(q)}`;
+        } else {
+            const url = new URL(q);
+            if (!allowedHostnames.includes(url.hostname)) {
+                return res.status(400).json({ error: 'Invalid hostname' });
+            }
+            targetUrl = url.toString();
         }
 
         const response = await axios.get(targetUrl, {
