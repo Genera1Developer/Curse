@@ -29,7 +29,7 @@ app.get('/api/proxy.js', async (req, res) => {
         const response = await axios.get(q, {
             responseType: 'arraybuffer',
             headers: {
-                'User-Agent': ''User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3', 
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
                 'Referer': q,
                 'Accept': req.headers['accept'] || '*/*',
                 'Accept-Language': req.headers['accept-language'] || 'en-US,en;q=0.9',
