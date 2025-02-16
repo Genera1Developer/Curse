@@ -26,11 +26,10 @@ app.get('/api/proxy.js', async (req, res) => {
     }
 
     try {
-        const baseUrl = new URL(q);
-        const response = await axios.get(baseUrl.toString(), {
+        const response = await axios.get(q, {
             responseType: 'arraybuffer',
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+                'User-Agent': ''User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3', 
                 'Referer': q,
                 'Accept': req.headers['accept'] || '*/*',
                 'Accept-Language': req.headers['accept-language'] || 'en-US,en;q=0.9',
@@ -47,25 +46,15 @@ app.get('/api/proxy.js', async (req, res) => {
             htmlContent = htmlContent.replace(/(href|src|action)="([^"]*)"/g, (match, attr, url) => {
                 if (url.startsWith('http') || url.startsWith('//')) {
                     return `${attr}="/api/proxy.js?q=${encodeURIComponent(url)}"`;
-                } else if (url.startsWith('/')) {
-                    const fullUrl = new URL(url, baseUrl).toString();
-                    return `${attr}="/api/proxy.js?q=${encodeURIComponent(fullUrl)}"`;
-                } else {
-                    return match;
                 }
+                return match;
             });
 
-            
             htmlContent = htmlContent.replace(/url\((['"]?)([^'"]+)\1\)/g, (match, quote, url) => {
                 if (url.startsWith('http') || url.startsWith('//')) {
                     return `url(${quote}/api/proxy.js?q=${encodeURIComponent(url)}${quote})`;
-                } else if (url.startsWith('/')) {
-                    
-                    const fullUrl = new URL(url, baseUrl).toString();
-                    return `url(${quote}/api/proxy.js?q=${encodeURIComponent(fullUrl)}${quote})`;
-                } else {
-                    return match;
                 }
+                return match;
             });
 
             res.send(htmlContent);
