@@ -15,61 +15,67 @@ export default async function handler(req, res) {
 
   try {
     const searxInstance = 'https://searx.be';
-    const searchUrl = `${searxInstance}/search`;
+    const searchQuery = Array.isArray(q) ? q[0] : q;
     
-    const params = {
-      q: Array.isArray(q) ? q[0] : q,
-      format: 'html',
-      language: 'en-US',
-      categories: 'general',
-      theme: 'simple'
-    };
+    let searchUrl;
+    try {
+      const urlTest = new URL(searchQuery);
+      searchUrl = searchQuery;
+    } catch {
+      searchUrl = `${searxInstance}/search`;
+    }
 
-    const response = await axios.get(searchUrl, {
-      params,
+    const response = await axios({
+      method: 'GET',
+      url: searchUrl,
+      ...(searchUrl === `${searxInstance}/search` ? {
+        params: {
+          q: searchQuery,
+          format: 'html',
+          language: 'en-US',
+          categories: 'general',
+          theme: 'simple'
+        }
+      } : {}),
       responseType: 'stream',
       headers: {
         'Accept': 'text/html',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-      }
+      },
+      maxRedirects: 5
     });
 
     const transformStream = new Transform({
       transform(chunk, encoding, callback) {
         let chunkStr = chunk.toString('utf8');
-        chunkStr = chunkStr.replace(/href=["']([^"']+)["']/gi, (match, url) => {
-          try {
-            const validUrl = new URL(url, searxInstance);
-            return `href="/api/proxy.js?q=${encodeURIComponent(validUrl.toString())}"`;
-          } catch {
-            return match;
-          }
+        chunkStr = chunkStr.replace(/href=["'](\/[^"']+)["']/gi, (match, url) => {
+          return `href="/api/proxy.js?q=${encodeURIComponent(searxInstance + url)}"`;
         });
-
-        chunkStr = chunkStr.replace(/src=["']([^"']+)["']/gi, (match, url) => {
-          try {
-            const validUrl = new URL(url, searxInstance);
-            return `src="/api/proxy.js?q=${encodeURIComponent(validUrl.toString())}"`;
-          } catch {
-            return match;
-          }
+        chunkStr = chunkStr.replace(/href=["'](https?:\/\/[^"']+)["']/gi, (match, url) => {
+          return `href="/api/proxy.js?q=${encodeURIComponent(url)}"`;
         });
-        chunkStr = chunkStr.replace(/(https?:\/\/[^\s<>"']+)/gi, (url) => {
-          try {
-            const validUrl = new URL(url);
-            return `/api/proxy.js?q=${encodeURIComponent(validUrl.toString())}`;
-          } catch {
-            return url;
-          }
+        chunkStr = chunkStr.replace(/src=["'](\/[^"']+)["']/gi, (match, url) => {
+          return `src="/api/proxy.js?q=${encodeURIComponent(searxInstance + url)}"`;
+        });
+        chunkStr = chunkStr.replace(/src=["'](https?:\/\/[^"']+)["']/gi, (match, url) => {
+          return `src="/api/proxy.js?q=${encodeURIComponent(url)}"`;
+        });
+        chunkStr = chunkStr.replace(/action=["'](\/[^"']+)["']/gi, (match, url) => {
+          return `action="/api/search.js?q=${encodeURIComponent(searxInstance + url)}"`;
+        });
+        chunkStr = chunkStr.replace(/(\shref=|\ssrc=|\saction=)(https?:\/\/[^\s<>"']+)/gi, (match, attr, url) => {
+          return `${attr}"/api/proxy.js?q=${encodeURIComponent(url)}"`;
         });
 
         callback(null, chunkStr);
-      },
-      flush(callback) {
-        this.push('</body></html>');
-        callback();
       }
     });
+    const headers = response.headers;
+    for (const [key, value] of Object.entries(headers)) {
+      if (!['content-length', 'content-encoding', 'transfer-encoding'].includes(key.toLowerCase())) {
+        res.setHeader(key, value);
+      }
+    }
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     response.data.pipe(transformStream).pipe(res);
@@ -88,14 +94,14 @@ export default async function handler(req, res) {
     res.status(500).send(`<!DOCTYPE html>
 <html>
 <head>
-  <title>U BROKE IT</title>
+  <title>U break it</title>
   <style>
     body { font-family: Arial, sans-serif; color: red; padding: 20px; }
   </style>
 </head>
 <body>
-  <h1>U Broke it again</h1>
-  <p>Heres da error code ${error.message}</p>
+  <h1>U Broke It</h1>
+  <p>An error occurred while processing your search: ${error.message}</p>
   <p>Bastard</p>
 </body>
 </html>
