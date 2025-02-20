@@ -16,72 +16,98 @@ export default async function handler(req, res) {
   try {
     const searxInstance = 'https://searx.be';
     const searchQuery = Array.isArray(q) ? q[0] : q;
-    const searchUrl = new URL('/search', searxInstance);
-    searchUrl.searchParams.append('q', searchQuery);
-    searchUrl.searchParams.append('categories', 'general');
-    searchUrl.searchParams.append('language', 'en');
-    searchUrl.searchParams.append('format', 'html');
     
-    console.log('Requesting:', searchUrl.toString());
+    let searchUrl;
+    try {
+      const urlTest = new URL(searchQuery);
+      searchUrl = searchQuery;
+    } catch {
+      searchUrl = `${searxInstance}/search`;
+    }
 
     const response = await axios({
       method: 'GET',
-      url: searchUrl.toString(),
+      url: searchUrl,
+      ...(searchUrl === `${searxInstance}/search` ? {
+        params: {
+          q: searchQuery,
+          format: 'html',
+          language: 'en-US',
+          categories: 'general',
+          theme: 'simple'
+        }
+      } : {}),
+      responseType: 'stream',
       headers: {
-        'Accept': 'text/html,application/xhtml+xml',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
+        'Accept': 'text/html',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
       },
-      validateStatus: function (status) {
-        return status >= 200 && status < 500; 
-      },
-      maxRedirects: 5,
-      timeout: 10000
+      maxRedirects: 5
     });
-    if (response.status >= 300 && response.status < 400 && response.headers.location) {
-      const redirectUrl = new URL(response.headers.location, searxInstance).toString();
-      res.redirect(`/api/search.js?q=${encodeURIComponent(redirectUrl)}`);
-      return;
+
+    const transformStream = new Transform({
+      transform(chunk, encoding, callback) {
+        let chunkStr = chunk.toString('utf8');
+        
+        chunkStr = chunkStr.replace(/href=["'](\/[^"']+)["']/gi, (match, url) => {
+          return `href="/api/proxy.js?q=${encodeURIComponent(searxInstance + url)}"`;
+        });
+
+        chunkStr = chunkStr.replace(/href=["'](https?:\/\/[^"']+)["']/gi, (match, url) => {
+          return `href="/api/proxy.js?q=${encodeURIComponent(url)}"`;
+        });
+
+        chunkStr = chunkStr.replace(/src=["'](\/[^"']+)["']/gi, (match, url) => {
+          return `src="/api/proxy.js?q=${encodeURIComponent(searxInstance + url)}"`;
+        });
+
+        chunkStr = chunkStr.replace(/src=["'](https?:\/\/[^"']+)["']/gi, (match, url) => {
+          return `src="/api/proxy.js?q=${encodeURIComponent(url)}"`;
+        });
+
+        chunkStr = chunkStr.replace(/action=["'](\/[^"']+)["']/gi, (match, url) => {
+          return `action="/api/search.js?q=${encodeURIComponent(searxInstance + url)}"`;
+        });
+
+        chunkStr = chunkStr.replace(/(\shref=|\ssrc=|\saction=)(https?:\/\/[^\s<>"']+)/gi, (match, attr, url) => {
+          return `${attr}"/api/proxy.js?q=${encodeURIComponent(url)}"`;
+        });
+
+        callback(null, chunkStr);
+      }
+    });
+
+    const headers = response.headers;
+    for (const [key, value] of Object.entries(headers)) {
+      if (!['content-length', 'content-encoding', 'transfer-encoding'].includes(key.toLowerCase())) {
+        res.setHeader(key, value);
+      }
     }
 
-    if (response.data) {
-      let html = response.data;
-      html = html.replace(/href=["'](\/[^"']+)["']/g, 
-        (match, path) => `href="/api/search.js?q=${encodeURIComponent(searxInstance + path)}"`);
-      html = html.replace(/href=["'](https?:\/\/[^"']+)["']/g,
-        (match, url) => `href="/api/search.js?q=${encodeURIComponent(url)}"`);
-      html = html.replace(/<form([^>]*)action=["']([^"']+)["']/g,
-        (match, attrs, action) => {
-          const actionUrl = action.startsWith('http') ? action : searxInstance + action;
-          return `<form${attrs}action="/api/search.js?q=${encodeURIComponent(actionUrl)}"`;
-        });
-      html = html.replace(/<base[^>]*>/g, `<base href="${searxInstance}/">`);
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(html);
-    } else {
-      throw new Error('No content received from search engine');
-    }
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    response.data.pipe(transformStream).pipe(res);
+
+    transformStream.on('error', (err) => {
+      console.error('Stream error:', err);
+      res.end();
+    });
+
+    response.data.on('error', (err) => {
+      console.error('SearX stream error:', err);
+      res.end();
+    });
 
   } catch (error) {
     console.error('Search error:', error.message);
-    res.status(500).send(`<!DOCTYPE html>
-<html>
-<head>
-  <title>Search Error</title>
-  <style>
-    body { font-family: Arial, sans-serif; color: red; padding: 20px; }
-  </style>
-</head>
-<body>
-  <h1>U Broke It!</h1>
-  <p>An error occurred while processing your search: ${error.message}</p>
-  <p>Bastard.</p>
-  <pre>${error.stack}</pre>
-</body>
-</html>
-`);
+    res.status(500).send(`
+      <html>
+        <head><title>U BROKE IT</title></head>
+        <body>
+          <h1>U Broke It!</h1>
+          <p>bastard.  ${error.message}</p>
+        </body>
+      </html>
+    `);
   }
 }
 
