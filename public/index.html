@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
     <link rel="stylesheet" href="/visuals/dropdown.css">
     <link rel="stylesheet" href="/theme/particles.css">
+    <limk rel="stylesheet" href="/theme/forest.css">
 </head>
 <body>
     <canvas id="canvas"></canvas>
@@ -182,6 +183,19 @@
             item.addEventListener('click', () => {
                 const selectedTheme = item.getAttribute('data-theme');
                 html.setAttribute('data-theme', selectedTheme);
+                
+                if (selectedTheme === "forest") {
+                    const forestLink = document.createElement("link");
+                    forestLink.rel = "stylesheet";
+                    forestLink.href = "/theme/forest.css";
+                    document.head.appendChild(forestLink);
+                } else {
+                    const existingForestLink = document.querySelector('link[href="/theme/forest.css"]');
+                    if (existingForestLink) {
+                        existingForestLink.remove();
+                    }
+                }
+
                 localStorage.setItem('theme', selectedTheme);
                 themeDropdown.classList.remove('active');
             });
