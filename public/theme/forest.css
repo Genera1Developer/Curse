@@ -1,0 +1,330 @@
+:root {
+    --primary-glow: rgb(34, 139, 34);
+    --secondary-glow: rgb(85, 107, 47);
+}
+
+.light {
+    --primary-glow: rgb(144, 238, 144);
+    --secondary-glow: rgb(0, 128, 0);
+}
+
+body {
+    background-color: #2f4f4f;
+    transition: background-color 0.3s ease;
+}
+
+.light body {
+    background-color: #3e5b41;
+}
+
+.cyber-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    background: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQzzCCgg53YC5JfIhkcxdLdeL19XTrc0tW5YA&s') no-repeat center center fixed;
+    background-size: cover;
+}
+
+.cyber-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.6;
+    animation: float 20s infinite ease-in-out;
+}
+
+.blob-1 {
+    width: 400px;
+    height: 400px;
+    background: var(--primary-glow);
+    top: 20%;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.blob-2 {
+    width: 300px;
+    height: 300px;
+    background: var(--secondary-glow);
+    top: 50%;
+    right: 20%;
+    animation-delay: -5s;
+}
+
+.blob-3 {
+    width: 250px;
+    height: 250px;
+    background: var(--primary-glow);
+    bottom: 10%;
+    left: 30%;
+    animation-delay: -10s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(50px, 50px) rotate(90deg); }
+    50% { transform: translate(0, 100px) rotate(180deg); }
+    75% { transform: translate(-50px, 50px) rotate(270deg); }
+}
+
+.cyber-card {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    border-radius: 12px;
+}
+
+.light .cyber-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cyber-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.cyber-input {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.light .cyber-input {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.cyber-input:focus {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.cyber-button {
+    background: linear-gradient(45deg, var(--primary-glow), var(--secondary-glow));
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    padding: 8px 16px;
+    color: white;
+}
+
+.cyber-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.theme-icon-dark {
+    display: none;
+}
+
+.light .theme-icon-dark {
+    display: block;
+}
+
+.light .theme-icon-light {
+    display: none;
+}
+
+.toggle {
+    width: 50px;
+    height: 25px;
+    border-radius: 25px;
+    background-color: #ccc;
+    transition: background-color 0.3s ease;
+    position: relative;
+}
+
+.toggle .circle {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    transition: left 0.3s ease;
+}
+
+.toggle-on {
+    background-color: #2ecc71;
+}
+
+.toggle-on .circle {
+    left: 26px;
+}
+
+.toggle-off {
+    background-color: #e74c3c;
+}
+
+.toggle-off .circle {
+    left: 2px;
+}
+
+.proxy-container {
+    position: relative;
+    margin-top: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 600px;
+}
+
+.proxy-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100vh;
+    z-index: 1000;
+    background: #2f4f4f;
+}
+
+#proxyFrame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: white;
+}
+
+.proxy-controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1001;
+    display: flex;
+    gap: 8px;
+}
+
+.control-btn {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--primary-glow);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.control-btn:hover {
+    background: var(--primary-glow);
+    color: black;
+}
+
+.console-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 300px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    font-family: monospace;
+    padding: 1rem;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    display: none;
+    transform: translateY(100%);
+}
+
+.console-container.visible {
+    transform: translateY(0);
+}
+
+.light .console-container {
+    background: rgba(255, 255, 255, 0.8);
+    color: black;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.console-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.console-header button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--primary-glow);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.light .console-header button {
+    background: rgba(0, 0, 0, 0.1);
+    color: black;
+}
+
+.console-header button:hover {
+    background: var(--primary-glow);
+    color: black;
+}
+
+.console-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1rem;
+}
+
+.console-tab {
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.console-tab.active {
+    background: var(--primary-glow);
+    color: black;
+}
+
+.console-content {
+    display: none;
+}
+
+.console-content.active {
+    display: block;
+}
+
+.console-log {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.console-log .log-item {
+    margin-bottom: 0.5rem;
+}
+
+.console-log .log-item.error {
+    color: #ff4444;
+}
+
+.console-log .log-item.info {
+    color: #44ff44;
+}
+
+.console-log .log-item.warn {
+    color: #ffcc00;
+}
+
+.detached {
+    position: absolute;
+    resize: both;
+    overflow: auto;
+}
