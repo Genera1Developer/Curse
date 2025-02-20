@@ -39,7 +39,7 @@ const createProxyUrl = (url, baseUrl) => {
 };
 
 app.get('/api/proxy.js', async (req, res) => {
-    const { q } = req.query;
+    const { q } = req.query; // enabled ?q= to be done for the proxying sites
     
     if (!q) {
         return res.status(400).json({ error: 'Missing query parameter: q' });
@@ -60,7 +60,7 @@ app.get('/api/proxy.js', async (req, res) => {
         res.setHeader('Content-Type', contentType);
         res.setHeader('Cache-Control', 'public, max-age=3600');
 
-        if (contentType.includes('text/html')) {
+        if (contentType.includes('text/html')) {  //Make teh buttons and links go to my site instead of external (bc external stinky and blocked)
             let htmlContent = response.data.toString('utf-8');
             htmlContent = htmlContent.replace(
                 /(href|src|action)="([^"]*)"/g,
@@ -96,5 +96,5 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 app.listen(port, () => {
-    console.log(`Proxy server running on http://localhost:${port}`);
+    console.log(`Proxy server running on http://localhost:${port}`); 
 });
