@@ -1,11 +1,17 @@
-const axios = require('axios');
-const express = require('express');
-const path = require('path');
-const RateLimit = require('express-rate-limit');
+import axios from 'axios';
+import express from 'express';
+import path from 'path';
+import rateLimit from 'express-rate-limit';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const app = express();
 const port = process.env.PORT || 3000;
 
-const limiter = RateLimit({
+const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, 
     max: 500,
 });
@@ -20,7 +26,6 @@ app.use((req, res, next) => {
 
 app.get('/api/proxy.js', async (req, res) => {
     const { q } = req.query;
-
     if (!q) {
         return res.status(400).json({ error: 'Missing query parameter: q' });
     }
@@ -42,21 +47,18 @@ app.get('/api/proxy.js', async (req, res) => {
 
         if (contentType.includes('text/html')) {
             let htmlContent = response.data.toString('utf-8');
-
             htmlContent = htmlContent.replace(/(href|src|action)="([^"]*)"/g, (match, attr, url) => {
                 if (url.startsWith('http') || url.startsWith('//')) {
                     return `${attr}="/api/proxy.js?q=${encodeURIComponent(url)}"`;
                 }
                 return match;
             });
-
             htmlContent = htmlContent.replace(/url\((['"]?)([^'"]+)\1\)/g, (match, quote, url) => {
                 if (url.startsWith('http') || url.startsWith('//')) {
                     return `url(${quote}/api/proxy.js?q=${encodeURIComponent(url)}${quote})`;
                 }
                 return match;
             });
-
             res.send(htmlContent);
         } else {
             res.send(response.data);
