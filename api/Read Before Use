@@ -54,4 +54,6 @@ nodemon.json 🟢
 
 vercel.json 🟢
 
+.env 🟡
+
 API 🟡
