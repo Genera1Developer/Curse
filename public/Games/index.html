@@ -1,1 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games | Curse</title>
+    <link rel="stylesheet" href="/theme/default.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="/visuals/dropdown.css">
+    <link rel="stylesheet" href="/theme/particles.css">
+    <link rel="stylesheet" href="/theme/forest.css">
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="cyber-bg">
+        <div class="cyber-blob blob-1"></div>
+        <div class="cyber-blob blob-2"></div>
+        <div class="cyber-blob blob-3"></div>
+    </div>
 
+    <div class="container mx-auto px-4 py-8 relative">
+        <button 
+            id="themeToggle" 
+            class="fixed top-4 right-4 cyber-button p-2 rounded-full text-white"
+            aria-label="Toggle light mode"
+        >
+            <svg class="w-6 h-6 theme-icon-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            <svg class="w-6 h-6 theme-icon-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+        </button>
+        <button 
+            id="themeSelector" 
+            class="fixed top-16 right-4 cyber-button p-2 rounded-full text-white"
+            aria-label="Select theme"
+        >
+            🎨
+        </button>
+
+        <div id="themeDropdown" class="theme-dropdown">
+            <div class="theme-item" data-theme="default">
+                <div class="theme-preview" style="background: linear-gradient(135deg, #1e3a8a, #1e40af);"></div>
+                Default
+            </div>
+            <div class="theme-item" data-theme="forest">
+                <div class="theme-preview" style="background: linear-gradient(135deg, #2d7a4d, #4caf50);"></div>
+                Forest
+            </div>
+            <div class="theme-item" data-theme="sunset">
+                <div class="theme-preview" style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
+                Sunset
+            </div>
+        </div>
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold mb-4 text-red" style="text-shadow: 0 0 10px var(--primary-glow)">
+                CURSE
+            </h1>
+            <p class="text-gray-300">Choose Your Boredom Cure</p>
+        </header>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div class="cyber-card rounded-lg p-6 text-center">
+                <a href="./public/Games/bbr.html" class="block">
+                    <img src="/games/game1.jpg" alt="Game 1" class="w-full h-48 object-cover rounded-lg">
+                    <h3 class="mt-4 text-xl font-semibold text-white">Game 1</h3>
+                </a>
+            </div>
+            <div class="cyber-card rounded-lg p-6 text-center">
+                <a href="/game2.html" class="block">
+                    <img src="/games/game2.jpg" alt="Game 2" class="w-full h-48 object-cover rounded-lg">
+                    <h3 class="mt-4 text-xl font-semibold text-white">Game 2</h3>
+                </a>
+            </div>
+            <div class="cyber-card rounded-lg p-6 text-center">
+                <a href="/game3.html" class="block">
+                    <img src="/games/game3.jpg" alt="Game 3" class="w-full h-48 object-cover rounded-lg">
+                    <h3 class="mt-4 text-xl font-semibold text-white">Game 3</h3>
+                </a>
+            </div>
+            <div class="cyber-card rounded-lg p-6 text-center">
+                <a href="/game4.html" class="block">
+                    <img src="/games/game4.jpg" alt="Game 4" class="w-full h-48 object-cover rounded-lg">
+                    <h3 class="mt-4 text-xl font-semibold text-white">Game 4</h3>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const html = document.documentElement;
+        const themeToggle = document.getElementById('themeToggle');
+        const themeSelector = document.getElementById('themeSelector');
+        const themeDropdown = document.getElementById('themeDropdown');
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('light');
+            localStorage.setItem('theme', html.classList.contains('light') ? 'light' : 'dark');
+        });
+
+        if (localStorage.getItem('theme') === 'light') {
+            html.classList.add('light');
+        }
+
+        themeSelector.addEventListener('click', () => {
+            themeDropdown.classList.toggle('active');
+        });
+
+        document.querySelectorAll('.theme-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const selectedTheme = item.getAttribute('data-theme');
+                html.setAttribute('data-theme', selectedTheme);
+                localStorage.setItem('theme', selectedTheme);
+                themeDropdown.classList.remove('active');
+            });
+        });
+
+        const savedTheme = localStorage.getItem('theme') || 'default';
+        html.setAttribute('data-theme', savedTheme);
+    </script>
+    
+    <script src="/theme/particles.js"></script>
+</body>
+</html>
