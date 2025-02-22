@@ -28,7 +28,7 @@ Read SECURITY.md for security details.  It's not much but its the truth
 Static proxy do not like google.
 
 <img src="/assets/google.gif" alt="Google gif is supposed to be here..">
-
+SearX Is better anyway..
 
 ## Honesty
 
