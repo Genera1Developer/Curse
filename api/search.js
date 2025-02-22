@@ -16,7 +16,6 @@ export default async function handler(req, res) {
   try {
     const searxInstance = 'https://searx.be';
     const searchQuery = Array.isArray(q) ? q[0] : q;
-    
     let searchUrl;
     try {
       const urlTest = new URL(searchQuery);
@@ -24,7 +23,6 @@ export default async function handler(req, res) {
     } catch {
       searchUrl = `${searxInstance}/search`;
     }
-
     const response = await axios({
       method: 'GET',
       url: searchUrl,
@@ -33,78 +31,79 @@ export default async function handler(req, res) {
           q: searchQuery,
           format: 'html',
           language: 'en-US',
-          categories: 'general',
-          theme: 'simple'
+          categories: 'general,images,videos,news',
+          theme: 'simple',
+          safesearch: 1 // no bad searches wierdos
         }
       } : {}),
       responseType: 'stream',
       headers: {
-        'Accept': 'text/html',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'DNT': '1',
+        'Connection': 'keep-alive'
       },
-      maxRedirects: 5
+      maxRedirects: 10,
+      timeout: 10000  
     });
-
     const transformStream = new Transform({
       transform(chunk, encoding, callback) {
         let chunkStr = chunk.toString('utf8');
-        
-        chunkStr = chunkStr.replace(/href=["'](\/[^"']+)["']/gi, (match, url) => {
-          return `href="/api/proxy.js?q=${encodeURIComponent(searxInstance + url)}"`;
+        const resourceTypes = ['href', 'src', 'action', 'data-url', 'poster'];
+        resourceTypes.forEach(type => {
+          chunkStr = chunkStr.replace(
+            new RegExp(`${type}=["'](\/[^"']+)["']`, 'gi'),
+            (match, url) => `${type}="/api/proxy.js?q=${encodeURIComponent(searxInstance + url)}"`
+          );
+          chunkStr = chunkStr.replace(
+            new RegExp(`${type}=["'](https?:\/\/[^"']+)["']`, 'gi'),
+            (match, url) => `${type}="/api/proxy.js?q=${encodeURIComponent(url)}"`
+          );
         });
-
-        chunkStr = chunkStr.replace(/href=["'](https?:\/\/[^"']+)["']/gi, (match, url) => {
-          return `href="/api/proxy.js?q=${encodeURIComponent(url)}"`;
-        });
-
-        chunkStr = chunkStr.replace(/src=["'](\/[^"']+)["']/gi, (match, url) => {
-          return `src="/api/proxy.js?q=${encodeURIComponent(searxInstance + url)}"`;
-        });
-
-        chunkStr = chunkStr.replace(/src=["'](https?:\/\/[^"']+)["']/gi, (match, url) => {
-          return `src="/api/proxy.js?q=${encodeURIComponent(url)}"`;
-        });
-
-        chunkStr = chunkStr.replace(/action=["'](\/[^"']+)["']/gi, (match, url) => {
-          return `action="/api/search.js?q=${encodeURIComponent(searxInstance + url)}"`;
-        });
-
-        chunkStr = chunkStr.replace(/(\shref=|\ssrc=|\saction=)(https?:\/\/[^\s<>"']+)/gi, (match, attr, url) => {
-          return `${attr}"/api/proxy.js?q=${encodeURIComponent(url)}"`;
-        });
+        if (chunkStr.includes('<head>')) {
+          const csp = "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: *;\">";
+          chunkStr = chunkStr.replace('<head>', `<head>${csp}`);
+        }
 
         callback(null, chunkStr);
       }
     });
-
     const headers = response.headers;
     for (const [key, value] of Object.entries(headers)) {
       if (!['content-length', 'content-encoding', 'transfer-encoding'].includes(key.toLowerCase())) {
         res.setHeader(key, value);
       }
     }
-
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
     response.data.pipe(transformStream).pipe(res);
-
     transformStream.on('error', (err) => {
-      console.error('Stream error:', err);
+      console.error('Transform stream error:', err);
       res.end();
     });
-
     response.data.on('error', (err) => {
       console.error('SearX stream error:', err);
       res.end();
     });
 
   } catch (error) {
-    console.error('Search error:', error.message);
+    console.error('Search error:', error);
     res.status(500).send(`
       <html>
-        <head><title>U BROKE IT</title></head>
+        <head>
+          <title>U BROKE IT</title>
+          <style>
+            body { font-family: system-ui; padding: 2rem; }
+            .error { color: #e11d48; }
+          </style>
+        </head>
         <body>
-          <h1>U Broke It!</h1>
-          <p>bastard.  ${error.message}</p>
+          <h1 class="error">U Broke It!</h1>
+          <p>An error occurred while processing your request: ${error.message}</p>
+          <p>Bastard.</p>
         </body>
       </html>
     `);
