@@ -62,7 +62,7 @@ That being said all this code was made myself through painful hours of work, so 
 
 
 
-## Join the Discord  <a href="https://discord.gg/S7YjkNHQPg"><img style="height: 1em;" src="https://github.com/dheereshagrwal/colored-icons/raw/master/public/logos/discord/discord.svg"></a>
+## Join the Discord  <a href="https://discord.gg/S7YjkNHQPg"><img style="height: 1em;" src="./assets/IMG_4662.png"></a>
 
 - Largest proxy link community with thousands of links
 - Movies, TV Shows, Proxies, Games, we have it all.
