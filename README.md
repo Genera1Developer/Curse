@@ -38,7 +38,7 @@ Sourceforge is a fucking gold mine of old arabic dudes that code what you can't 
 Regardless, all that was coded for me was the /public/themes/default.css and the edits for that needed in /public/index.html
 ```
 
-This was coded in [Replit](https://replit.com) btw
+This was coded in Codespaces btw
 
 ## Don't Be A Skid.
 
