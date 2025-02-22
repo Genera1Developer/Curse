@@ -54,3 +54,17 @@ That being said all this code was made myself through painful hours of work, so 
 
 ## To everyone saying my proxy is ass...
 <img src="/assets/skiddy.gif" alt="Thanks Oreo For Gif!">
+
+
+
+
+
+
+
+
+## Join the Discord  <a href="https://discord.gg/S7YjkNHQPg"><img style="height: 1em;" src="https://github.com/dheereshagrwal/colored-icons/raw/master/public/logos/discord/discord.svg"></a>
+
+- Largest proxy link community with thousands of links
+- Movies, TV Shows, Proxies, Games, we have it all.
+- Semi-Active community, you type, someone might respond and it will likely be me
+*Glitch*
