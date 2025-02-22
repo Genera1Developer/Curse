@@ -71,4 +71,4 @@ That being said all this code was made myself through painful hours of work, so 
 
 ## Netlify Deploy Status
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/9a051808-2a04-48bd-b4b0-66d22d8f2cc8/deploy-status)](https://app.netlify.com/sites/curze/deploys)
+[![https://curze.netlify.app](https://api.netlify.com/api/v1/badges/9a051808-2a04-48bd-b4b0-66d22d8f2cc8/deploy-status)](https://app.netlify.com/sites/curze/deploys)
