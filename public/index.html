@@ -99,23 +99,21 @@
                 </div>
                 <div class="flex items-center justify-between">
                     <span class="text-gray-300">Brightness</span>
-                    <div class="flex items-center space-x-2">
-                        <img src="./assets/sun.png" alt="Darker" class="w-6 h-6" id="brightnessLeftImage">
-                        <input type="range" id="brightnessSlider" min="0" max="100" value="100" class="w-32">
-                        <img src="./assets/moon.png" alt="Brighter" class="w-6 h-6" id="brightnessRightImage">
+                    <div class="flex items-center space-x-4">
+                        <img id="brightnessLeftImage" src="your-left-image-url.jpg" class="w-6 h-6" />
+                        <input id="brightnessSlider" type="range" min="0" max="100" value="50" class="slider" />
+                        <img id="brightnessRightImage" src="your-right-image-url.jpg" class="w-6 h-6" />
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <script>
         const html = document.documentElement;
         const themeToggle = document.getElementById('themeToggle');
         const themeSelector = document.getElementById('themeSelector');
         const themeDropdown = document.getElementById('themeDropdown');
-        const proxyContainer = document.getElementById('proxyContainer');
-        const proxyFrame = document.getElementById('proxyFrame');
         const searchForm = document.getElementById('searchForm');
         const searchInput = document.getElementById('searchInput');
         const adBlockToggle = document.getElementById('adBlockToggle');
@@ -136,15 +134,44 @@
         themeSelector.addEventListener('click', () => {
             themeDropdown.classList.toggle('active');
         });
+
+        document.querySelectorAll('.theme-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const selectedTheme = item.getAttribute('data-theme');
+                html.setAttribute('data-theme', selectedTheme);
+                localStorage.setItem('theme', selectedTheme);
+                themeDropdown.classList.remove('active');
+            });
+        });
+
+        const savedTheme = localStorage.getItem('theme') || 'default';
+        html.setAttribute('data-theme', savedTheme);
+
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const query = searchInput.value.trim();
+            if (query) {
+                let url;
+                if (isValidUrl(query)) {
+                    url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
+                }
+            }
+        });
+
         brightnessSlider.addEventListener('input', (e) => {
             const brightnessValue = e.target.value;
-            html.style.filter = `brightness(${brightnessValue}%)`;
+            document.body.style.filter = `brightness(${brightnessValue}%)`;
         });
-        brightnessSlider.value = 50;  
-        html.style.filter = 'brightness(50%)';  
+
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        } //theme fixy and added brightness
     </script>
-    <script src="./adblocker/curseblock.js"></script>
-    <script src="./adblocker/ublock.js"></script>
     <script src="/theme/particles.js"></script>
 </body>
 </html>
