@@ -81,6 +81,33 @@
             </form>
         </div>
 
+        <div class="proxy-container hidden" id="proxyContainer">
+            <div class="proxy-controls">
+                <button class="control-btn" id="fullscreenBtn">⤢</button>
+                <button class="control-btn hidden" id="minimizeBtn">⤡</button>
+            </div>
+            <iframe id="proxyFrame"></iframe>
+        </div>
+
+        <div class="console-container" id="consoleContainer">
+            <div class="console-header">
+                <div class="console-tabs">
+                    <div class="console-tab active" data-tab="logs">Logs</div>
+                    <div class="console-tab" data-tab="source">Page Source</div>
+                </div>
+                <div>
+                    <button id="detachConsoleBtn">Detach</button>
+                    <button id="clearConsoleBtn">Clear</button>
+                </div>
+            </div>
+            <div class="console-content active" id="logsTab">
+                <div class="console-log" id="consoleLog"></div>
+            </div>
+            <div class="console-content" id="sourceTab">
+                <pre id="pageSource"></pre>
+            </div>
+        </div>
+
         <div class="max-w-2xl mx-auto cyber-card rounded-lg p-6">
             <h2 class="text-2xl font-semibold mb-4 text-white">System Controls</h2>
             <div class="space-y-4">
@@ -98,29 +125,42 @@
                     </select>
                 </div>
                 <div class="flex items-center justify-between">
-                    <span class="text-gray-300">Brightness</span>
-                    <div class="flex items-center space-x-4">
-                        <img id="brightnessLeftImage" src="your-left-image-url.jpg" class="w-6 h-6" />
-                        <input id="brightnessSlider" type="range" min="0" max="100" value="50" class="slider" />
-                        <img id="brightnessRightImage" src="your-right-image-url.jpg" class="w-6 h-6" />
+                    <span class="text-gray-300">See Source</span>
+                    <div id="seeSourceToggle" class="toggle toggle-off">
+                        <div class="circle"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    
     <script>
         const html = document.documentElement;
         const themeToggle = document.getElementById('themeToggle');
         const themeSelector = document.getElementById('themeSelector');
         const themeDropdown = document.getElementById('themeDropdown');
+        const proxyContainer = document.getElementById('proxyContainer');
+        const proxyFrame = document.getElementById('proxyFrame');
         const searchForm = document.getElementById('searchForm');
         const searchInput = document.getElementById('searchInput');
+        const consoleContainer = document.getElementById('consoleContainer');
+        const consoleLog = document.getElementById('consoleLog');
+        const clearConsoleBtn = document.getElementById('clearConsoleBtn');
+        const detachConsoleBtn = document.getElementById('detachConsoleBtn');
         const adBlockToggle = document.getElementById('adBlockToggle');
         const adBlockMethod = document.getElementById('adBlockMethod');
-        const brightnessSlider = document.getElementById('brightnessSlider');
-        const brightnessLeftImage = document.getElementById('brightnessLeftImage');
-        const brightnessRightImage = document.getElementById('brightnessRightImage');
+        const seeSourceToggle = document.getElementById('seeSourceToggle');
+        const logsTab = document.getElementById('logsTab');
+        const sourceTab = document.getElementById('sourceTab');
+        const pageSource = document.getElementById('pageSource');
+        const consoleTabs = document.querySelectorAll('.console-tab');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const minimizeBtn = document.getElementById('minimizeBtn');
+
+        let isAdBlockEnabled = false;
+        let isSeeSourceEnabled = false;
+        let isConsoleDetached = false;
+        let currentAdBlockMethod = 'curse';
 
         themeToggle.addEventListener('click', () => {
             html.classList.toggle('light');
@@ -139,6 +179,19 @@
             item.addEventListener('click', () => {
                 const selectedTheme = item.getAttribute('data-theme');
                 html.setAttribute('data-theme', selectedTheme);
+                
+                if (selectedTheme === "forest") {
+                    const forestLink = document.createElement("link");
+                    forestLink.rel = "stylesheet";
+                    forestLink.href = "/theme/forest.css";
+                    document.head.appendChild(forestLink);
+                } else {
+                    const existingForestLink = document.querySelector('link[href="/theme/forest.css"]');
+                    if (existingForestLink) {
+                        existingForestLink.remove();
+                    }
+                }
+
                 localStorage.setItem('theme', selectedTheme);
                 themeDropdown.classList.remove('active');
             });
@@ -154,14 +207,119 @@
                 let url;
                 if (isValidUrl(query)) {
                     url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
+                    proxyFrame.src = `/api/proxy.js?q=${encodeURIComponent(url)}`;
+                    logToConsole(`Opening URL: ${url}`, 'info');
+                } else {
+                    url = `/api/search.js?q=${encodeURIComponent(query)}`;
+                    proxyFrame.src = url;
+                    logToConsole(`Searching for: ${query}`, 'info');
                 }
+                proxyContainer.classList.remove('hidden');
             }
         });
 
-        brightnessSlider.addEventListener('input', (e) => {
-            const brightnessValue = e.target.value;
-            document.body.style.filter = `brightness(${brightnessValue}%)`;
+        fullscreenBtn.addEventListener('click', () => {
+            proxyContainer.classList.add('fullscreen');
+            fullscreenBtn.classList.add('hidden');
+            minimizeBtn.classList.remove('hidden');
+            logToConsole('Entered fullscreen mode', 'info');
         });
+
+        minimizeBtn.addEventListener('click', () => {
+            proxyContainer.classList.remove('fullscreen');
+            minimizeBtn.classList.add('hidden');
+            fullscreenBtn.classList.remove('hidden');
+            logToConsole('Exited fullscreen mode', 'info');
+        });
+
+        seeSourceToggle.addEventListener('click', () => {
+            seeSourceToggle.classList.toggle('toggle-on');
+            seeSourceToggle.classList.toggle('toggle-off');
+            isSeeSourceEnabled = seeSourceToggle.classList.contains('toggle-on');
+            consoleContainer.style.display = 'block';
+            consoleContainer.classList.add('visible');
+
+            if (isSeeSourceEnabled) {
+                fetch(proxyFrame.src)
+                    .then(response => response.text())
+                    .then(data => {
+                        pageSource.textContent = data;
+                        logToConsole(`Fetched source for ${proxyFrame.src}`, 'info');
+                    })
+                    .catch(error => {
+                        logToConsole(`Failed to fetch source: ${error}`, 'error');
+                    });
+            } else {
+                consoleContainer.classList.remove('visible');
+                setTimeout(() => {
+                    consoleContainer.style.display = 'none';
+                }, 300);
+            }
+        });
+
+        clearConsoleBtn.addEventListener('click', () => {
+            consoleLog.innerHTML = '';
+            logToConsole('Console cleared', 'info');
+        });
+
+        detachConsoleBtn.addEventListener('click', () => {
+            isConsoleDetached = !isConsoleDetached;
+            if (isConsoleDetached) {
+                consoleContainer.classList.add('detached');
+                detachConsoleBtn.textContent = 'Attach';
+            } else {
+                consoleContainer.classList.remove('detached');
+                detachConsoleBtn.textContent = 'Detach';
+            }
+        });
+
+        consoleTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                consoleTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                document.querySelectorAll('.console-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                document.getElementById(`${tab.dataset.tab}Tab`).classList.add('active');
+            });
+        });
+
+        adBlockToggle.addEventListener('click', () => {
+            adBlockToggle.classList.toggle('toggle-on');
+            adBlockToggle.classList.toggle('toggle-off');
+            isAdBlockEnabled = adBlockToggle.classList.contains('toggle-on');
+
+            if (isAdBlockEnabled) {
+                loadAdBlockMethod();
+                logToConsole(`Ad Block enabled (${currentAdBlockMethod})`, 'info');
+            } else {
+                if (currentAdBlockMethod === 'curse') {
+                    unblockAds();
+                } else if (currentAdBlockMethod === 'ublock') {
+                    unblockAds();
+                }
+                logToConsole('Ad Block disabled', 'info');
+            }
+        });
+        
+        adBlockMethod.addEventListener('change', () => {
+            currentAdBlockMethod = adBlockMethod.value;
+            logToConsole(`Switched to ${currentAdBlockMethod}`, 'info');
+
+            if (isAdBlockEnabled) {
+                loadAdBlockMethod();
+            }
+        });
+
+        function logToConsole(message, type = 'info') {
+            const logItem = document.createElement('div');
+            logItem.classList.add('log-item', type);
+            logItem.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleLog.appendChild(logItem);
+            consoleLog.scrollTop = consoleLog.scrollHeight;
+        }
 
         function isValidUrl(string) {
             try {
@@ -170,8 +328,22 @@
             } catch (_) {
                 return false;
             }
-        } //theme fixy and added brightness
+        }
+
+        function loadAdBlockMethod() {
+            if (currentAdBlockMethod === 'curse') {
+                if (typeof unblockAds === 'function') unblockAds();
+                blockAds();
+                logToConsole('Curse Block enabled', 'info');
+            } else if (currentAdBlockMethod === 'ublock') {
+                if (typeof unblockAds === 'function') unblockAds();
+                blockAds();
+                logToConsole('uBlock enabled', 'info');
+            }
+        }
     </script>
-    <script src="/theme/particles.js"></script>
+    <script src="./adblocker/curseblock.js"></script>
+    <script src="./adblocker/ublock.js"></script>
+    <script src="/theme/particles.js"></script> <!-- Now this...  Is clinical depression.  I need severe help -->
 </body>
 </html>
