@@ -9,6 +9,23 @@
     <link rel="stylesheet" href="/visuals/dropdown.css">
     <link rel="stylesheet" href="/theme/particles.css">
     <link rel="stylesheet" href="/theme/forest.css">
+    <style>
+        .button-group button.active {
+            background: var(--primary-glow);
+            color: white;
+        }
+        .particles-blur {
+            filter: blur(3px);
+        }
+        .quality-reduced {
+            image-rendering: pixelated;
+            filter: contrast(90%) brightness(90%);
+        }
+        .quality-reduced .cyber-blob {
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+    </style>
 </head>
 <body>
     <canvas id="canvas"></canvas>
@@ -124,6 +141,40 @@
                         </svg>
                     </div>
                 </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-300">Tab Behavior</span>
+                    <div class="button-group flex space-x-2">
+                        <button id="iframeBtn" class="cyber-button px-4 py-1 rounded-lg text-white active">Iframe</button>
+                        <button id="newWindowBtn" class="cyber-button px-4 py-1 rounded-lg text-white">New Window</button>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-300">Quality Mode</span>
+                    <div id="qualityToggle" class="toggle toggle-off">
+                        <div class="circle"></div>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-300">Text Size</span>
+                    <div class="flex items-center flex-1 max-w-xs ml-4">
+                        <span class="text-sm">a</span>
+                        <input
+                            type="range"
+                            id="textSizeSlider"
+                            min="12"
+                            max="24"
+                            value="16"
+                            class="w-full mx-2 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                        >
+                        <span class="text-xl">A</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-300">Particle Blur</span>
+                    <div id="particleBlurToggle" class="toggle toggle-off">
+                        <div class="circle"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -142,13 +193,58 @@
         const brightnessSlider = document.getElementById('brightnessSlider');
         const fullscreenBtn = document.getElementById('fullscreenBtn');
         const minimizeBtn = document.getElementById('minimizeBtn');
+        const iframeBtn = document.getElementById('iframeBtn');
+        const newWindowBtn = document.getElementById('newWindowBtn');
+        const qualityToggle = document.getElementById('qualityToggle');
+        const textSizeSlider = document.getElementById('textSizeSlider');
+        const particleBlurToggle = document.getElementById('particleBlurToggle');
 
         let isAdBlockEnabled = false;
         let currentAdBlockMethod = 'curse';
+        let useIframe = true;
 
         brightnessSlider.addEventListener('input', (e) => {
             const value = e.target.value;
             document.body.style.filter = `brightness(${value}%)`;
+        });
+
+        iframeBtn.addEventListener('click', () => {
+            iframeBtn.classList.add('active');
+            newWindowBtn.classList.remove('active');
+            useIframe = true;
+        });
+
+        newWindowBtn.addEventListener('click', () => {
+            newWindowBtn.classList.remove('active');
+            iframeBtn.classList.add('active');
+            useIframe = false;
+        });
+
+        qualityToggle.addEventListener('click', () => {
+            qualityToggle.classList.toggle('toggle-on');
+            qualityToggle.classList.toggle('toggle-off');
+            document.body.classList.toggle('quality-reduced');
+            
+            if (qualityToggle.classList.contains('toggle-on')) {
+                document.querySelectorAll('.cyber-blob').forEach(blob => {
+                    blob.style.animationDuration = '3s';
+                });
+            } else {
+                document.querySelectorAll('.cyber-blob').forEach(blob => {
+                    blob.style.animationDuration = '1.5s';
+                });
+            }
+        });
+
+        textSizeSlider.addEventListener('input', (e) => {
+            const size = e.target.value;
+            document.body.style.fontSize = `${size}px`;
+        });
+
+        particleBlurToggle.addEventListener('click', () => {
+            particleBlurToggle.classList.toggle('toggle-on');
+            particleBlurToggle.classList.toggle('toggle-off');
+            document.getElementById('canvas').classList.toggle('particles-blur');
         });
 
         themeToggle.addEventListener('click', () => {
@@ -196,12 +292,16 @@
                 let url;
                 if (isValidUrl(query)) {
                     url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
-                    proxyFrame.src = `/api/proxy.js?q=${encodeURIComponent(url)}`;
                 } else {
                     url = `/api/search.js?q=${encodeURIComponent(query)}`;
-                    proxyFrame.src = url;
                 }
-                proxyContainer.classList.remove('hidden');
+                
+                if (useIframe) {
+                    proxyFrame.src = `/api/proxy.js?q=${encodeURIComponent(url)}`;
+                    proxyContainer.classList.remove('hidden');
+                } else {
+                    window.open(`/api/proxy.js?q=${encodeURIComponent(url)}`, '_blank');
+                }
             }
         });
 
