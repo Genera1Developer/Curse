@@ -288,24 +288,29 @@
         searchForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const query = searchInput.value.trim();
-            if (query) {
-                let url;
-                if (isValidUrl(query)) {
-                    url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
-                } else {
-                    url = `/api/search.js?q=${encodeURIComponent(query)}`;
-                }
-                
-                if (useIframe) {
-                    proxyFrame.src = `/api/proxy.js?q=${encodeURIComponent(url)}`;
-                    proxyContainer.classList.remove('hidden');
-                } else {
-                    window.open(`/api/proxy.js?q=${encodeURIComponent(url)}`, '_blank');
-                }
-            }
-        });
-
-        fullscreenBtn.addEventListener('click', () => {
+if (query) {
+    let url;
+    if (isValidUrl(query)) {
+        url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
+    } else {
+        url = `/api/search.js?q=${encodeURIComponent(query)}`; //fix maybe?
+    }
+    if (useIframe) {
+        proxyFrame.src = `/api/proxy.js?q=${encodeURIComponent(url)}`;
+        proxyContainer.classList.remove('hidden');
+    } else {
+        window.open(`/api/proxy.js?q=${encodeURIComponent(url)}`, '_blank');
+    }
+}
+function isValidUrl(string) {
+    try {
+        new URL(string);
+        return true;
+    } catch (_) {
+        return false;
+    }
+}
+            fullscreenBtn.addEventListener('click', () => {
             proxyContainer.classList.add('fullscreen');
             fullscreenBtn.classList.add('hidden');
             minimizeBtn.classList.remove('hidden');
