@@ -60,7 +60,7 @@ app.get('/api/proxy.js', async (req, res) => {
         res.setHeader('Content-Type', contentType);
         res.setHeader('Cache-Control', 'public, max-age=3600');
 
-        if (contentType.includes('text/html')) {  //Make teh buttons and links go to my site instead of external (bc external stinky and blocked)
+        if (contentType.includes('text/html')) {  //Make teh buttons and links go through the site instead of href redirect (bc external stinky and blocked)
             let htmlContent = response.data.toString('utf-8');
             htmlContent = htmlContent.replace(
                 /(href|src|action)="([^"]*)"/g,
@@ -96,5 +96,5 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 app.listen(port, () => {
-    console.log(`Proxy server running on http://localhost:${port}`); 
+    console.log(`server running on http://localhost:${port}`); 
 });

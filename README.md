@@ -1,7 +1,7 @@
 # Curse 📗
 
 ```text
-Surf The Cursed Web Anonymous
+Surf The Web Anonymous
 ```
 
 [![Deploy to Heroku](https://binbashbanana.github.io/deploy-buttons/buttons/remade/heroku.svg)](https://heroku.com/deploy/?template=https://github.com/Genera1Developer/Curse)

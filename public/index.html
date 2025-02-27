@@ -1,371 +1,404 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Curse | Main</title>
-    <link rel="stylesheet" href="/theme/default.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
-    <link rel="stylesheet" href="/visuals/dropdown.css">
-    <link rel="stylesheet" href="/theme/particles.css">
-    <link rel="stylesheet" href="/theme/forest.css">
-    <style>
-        .button-group button.active {
-            background: var(--primary-glow);
-            color: white;
-        }
-        .particles-blur {
-            filter: blur(3px);
-        }
-        .quality-reduced {
-            image-rendering: pixelated;
-            filter: contrast(90%) brightness(90%);
-        }
-        .quality-reduced .cyber-blob {
-            opacity: 0.5;
-            transition: all 0.3s ease;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curse | Main</title>
+  <link rel="stylesheet" id="themeStylesheet" href="/theme/default.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+  <link rel="stylesheet" href="/visuals/dropdown.css">
+  <link rel="stylesheet" href="/theme/particles.css">
+  <style>
+    .button-group button.active {
+      background: var(--primary-glow);
+      color: white;
+    }
+    .particles-blur {
+      filter: blur(3px);
+    }
+    .quality-reduced {
+      image-rendering: pixelated;
+      filter: contrast(90%) brightness(90%);
+    }
+    .quality-reduced .cyber-blob {
+      opacity: 0.5;
+      transition: all 0.3s ease;
+    }
+
+    .proxy-container {
+      width: 100%;
+      height: 80vh; 
+      overflow: auto;
+      position: relative;
+    }
+    .proxy-container.fullscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: auto;
+      z-index: 1000;
+    }
+  
+    #proxyFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      overflow: auto;
+    }
+  </style>
 </head>
 <body>
-    <canvas id="canvas"></canvas>
-    <div class="cyber-bg">
-        <div class="cyber-blob blob-1"></div>
-        <div class="cyber-blob blob-2"></div>
-        <div class="cyber-blob blob-3"></div>
+  <script>
+   
+    if (window.top !== window.self) {
+      window.top.location = window.location.href;
+    }
+  </script>
+  <canvas id="canvas"></canvas>
+  <div class="cyber-bg">
+    <div class="cyber-blob blob-1"></div>
+    <div class="cyber-blob blob-2"></div>
+    <div class="cyber-blob blob-3"></div>
+  </div>
+
+  <div class="container mx-auto px-4 py-8 relative">
+    <button 
+      id="themeToggle" 
+      class="fixed top-4 right-4 cyber-button p-2 rounded-full text-white"
+      aria-label="Toggle light mode"
+    >
+      <svg class="w-6 h-6 theme-icon-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+      </svg>
+      <svg class="w-6 h-6 theme-icon-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+      </svg>
+    </button>
+    <button 
+      id="themeSelector" 
+      class="fixed top-16 right-4 cyber-button p-2 rounded-full text-white"
+      aria-label="Select theme"
+    >
+      🎨
+    </button>
+
+    <div id="themeDropdown" class="theme-dropdown">
+      <div class="theme-item" data-theme="default">
+        <div class="theme-preview" style="background: linear-gradient(135deg, #1e3a8a, #1e40af);"></div>
+        Fire & Water
+      </div>
+      <div class="theme-item" data-theme="forest">
+        <div class="theme-preview" style="background: linear-gradient(135deg, #2d7a4d, #4caf50);"></div>
+        Forest
+      </div>
+      <div class="theme-item" data-theme="sunset">
+        <div class="theme-preview" style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
+        Sunset
+      </div>
     </div>
 
-    <div class="container mx-auto px-4 py-8 relative">
-        <button 
-            id="themeToggle" 
-            class="fixed top-4 right-4 cyber-button p-2 rounded-full text-white"
-            aria-label="Toggle light mode"
-        >
-            <svg class="w-6 h-6 theme-icon-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-            </svg>
-            <svg class="w-6 h-6 theme-icon-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-            </svg>
-        </button>
-        <button 
-            id="themeSelector" 
-            class="fixed top-16 right-4 cyber-button p-2 rounded-full text-white"
-            aria-label="Select theme"
-        >
-            🎨
-        </button>
-
-        <div id="themeDropdown" class="theme-dropdown">
-            <div class="theme-item" data-theme="default">
-                <div class="theme-preview" style="background: linear-gradient(135deg, #1e3a8a, #1e40af);"></div>
-                Fire & Water
-            </div>
-            <div class="theme-item" data-theme="forest">
-                <div class="theme-preview" style="background: linear-gradient(135deg, #2d7a4d, #4caf50);"></div>
-                Forest
-            </div>
-            <div class="theme-item" data-theme="sunset">
-                <div class="theme-preview" style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
-                Sunset
-            </div>
+    <header class="text-center mb-12">
+      <h1 class="text-4xl font-bold mb-4 text-red" style="text-shadow: 0 0 10px var(--primary-glow)">
+        CURSE
+      </h1>
+      <p class="text-gray-300">12ft.io copy fr</p>
+    </header>
+    <div class="max-w-2xl mx-auto cyber-card rounded-lg p-6 mb-8">
+      <form id="searchForm" class="space-y-4">
+        <div class="relative">
+          <input 
+            type="text" 
+            id="searchInput" 
+            name="q"
+            placeholder="Enter Search Query Or URL | EX: https://example.com"
+            class="cyber-input w-full px-4 py-3 rounded-lg outline-none text-white placeholder-gray-400"
+            required
+          >
+          <button 
+            type="submit"
+            class="absolute right-2 top-2 cyber-button px-4 py-1 rounded-lg text-white"
+          >
+            Search
+          </button>
         </div>
-
-        <header class="text-center mb-12">
-            <h1 class="text-4xl font-bold mb-4 text-red" style="text-shadow: 0 0 10px var(--primary-glow)">
-                CURSE
-            </h1>
-            <p class="text-gray-300">12ft.io copy fr</p>
-        </header>
-        <div class="max-w-2xl mx-auto cyber-card rounded-lg p-6 mb-8">
-            <form id="searchForm" class="space-y-4">
-                <div class="relative">
-                    <input 
-                        type="text" 
-                        id="searchInput" 
-                        name="q"
-                        placeholder="Enter Search Query Or URL | EX: https://example.com"
-                        class="cyber-input w-full px-4 py-3 rounded-lg outline-none text-white placeholder-gray-400"
-                        required
-                    >
-                    <button 
-                        type="submit"
-                        class="absolute right-2 top-2 cyber-button px-4 py-1 rounded-lg text-white"
-                    >
-                        Search
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="proxy-container hidden" id="proxyContainer">
-            <div class="proxy-controls">
-                <button class="control-btn" id="fullscreenBtn">⤢</button>
-                <button class="control-btn hidden" id="minimizeBtn">⤡</button>
-            </div>
-            <iframe id="proxyFrame"></iframe>
-        </div>
-
-        <div class="max-w-2xl mx-auto cyber-card rounded-lg p-6">
-            <h2 class="text-2xl font-semibold mb-4 text-white">System Controls</h2>
-            <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                    <span class="text-gray-300">Ad Block</span>
-                    <div id="adBlockToggle" class="toggle toggle-off">
-                        <div class="circle"></div>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-gray-300">Ad Block Method</span>
-                    <select id="adBlockMethod" class="cyber-input px-4 py-2 rounded-lg">
-                        <option value="curse">Curse Block</option>
-                        <option value="ublock">uBlock</option>
-                    </select>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-gray-300">Brightness</span>
-                    <div class="flex items-center flex-1 max-w-xs ml-4">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-                        </svg>
-                        <input
-                            type="range"
-                            id="brightnessSlider"
-                            min="10"
-                            max="100"
-                            value="100"
-                            class="w-full mx-2 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                        >
-                        <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-                        </svg>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-gray-300">Tab Behavior</span>
-                    <div class="button-group flex space-x-2">
-                        <button id="iframeBtn" class="cyber-button px-4 py-1 rounded-lg text-white active">Iframe</button>
-                        <button id="newWindowBtn" class="cyber-button px-4 py-1 rounded-lg text-white">New Window</button>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-gray-300">Quality Mode</span>
-                    <div id="qualityToggle" class="toggle toggle-off">
-                        <div class="circle"></div>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-gray-300">Text Size</span>
-                    <div class="flex items-center flex-1 max-w-xs ml-4">
-                        <span class="text-sm">a</span>
-                        <input
-                            type="range"
-                            id="textSizeSlider"
-                            min="12"
-                            max="24"
-                            value="16"
-                            class="w-full mx-2 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
-                        >
-                        <span class="text-xl">A</span>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between">
-                    <span class="text-gray-300">Particle Blur</span>
-                    <div id="particleBlurToggle" class="toggle toggle-off">
-                        <div class="circle"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </form>
     </div>
-    
-    <script>
-        const html = document.documentElement;
-        const themeToggle = document.getElementById('themeToggle');
-        const themeSelector = document.getElementById('themeSelector');
-        const themeDropdown = document.getElementById('themeDropdown');
-        const proxyContainer = document.getElementById('proxyContainer');
-        const proxyFrame = document.getElementById('proxyFrame');
-        const searchForm = document.getElementById('searchForm');
-        const searchInput = document.getElementById('searchInput');
-        const adBlockToggle = document.getElementById('adBlockToggle');
-        const adBlockMethod = document.getElementById('adBlockMethod');
-        const brightnessSlider = document.getElementById('brightnessSlider');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-        const minimizeBtn = document.getElementById('minimizeBtn');
-        const iframeBtn = document.getElementById('iframeBtn');
-        const newWindowBtn = document.getElementById('newWindowBtn');
-        const qualityToggle = document.getElementById('qualityToggle');
-        const textSizeSlider = document.getElementById('textSizeSlider');
-        const particleBlurToggle = document.getElementById('particleBlurToggle');
 
-        let isAdBlockEnabled = false;
-        let currentAdBlockMethod = 'curse';
-        let useIframe = true;
+    <div class="proxy-container hidden" id="proxyContainer">
+      <div class="proxy-controls">
+        <button class="control-btn" id="fullscreenBtn">⤢</button>
+        <button class="control-btn hidden" id="minimizeBtn">⤡</button>
+      </div>
+      <iframe id="proxyFrame"></iframe>
+    </div>
 
-        brightnessSlider.addEventListener('input', (e) => {
-            const value = e.target.value;
-            document.body.style.filter = `brightness(${value}%)`;
+    <div class="max-w-2xl mx-auto cyber-card rounded-lg p-6">
+      <h2 class="text-2xl font-semibold mb-4 text-white">System Controls</h2>
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <span class="text-gray-300">Ad Block</span>
+          <div id="adBlockToggle" class="toggle toggle-off">
+            <div class="circle"></div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-300">Ad Block Method</span>
+          <select id="adBlockMethod" class="cyber-input px-4 py-2 rounded-lg">
+            <option value="curse">Curse Block</option>
+            <option value="ublock">uBlock</option>
+            <option value="oreo">OreoFiltering</option>
+          </select>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-300">Brightness</span>
+          <div class="flex items-center flex-1 max-w-xs ml-4">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+            <input
+              type="range"
+              id="brightnessSlider"
+              min="10"
+              max="100"
+              value="100"
+              class="w-full mx-2 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+            >
+            <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-300">Tab Behavior</span>
+          <div class="button-group flex space-x-2">
+            <button id="iframeBtn" class="cyber-button px-4 py-1 rounded-lg text-white active">Iframe</button>
+            <button id="newWindowBtn" class="cyber-button px-4 py-1 rounded-lg text-white">New Window</button>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-300">Quality Mode</span>
+          <div id="qualityToggle" class="toggle toggle-off">
+            <div class="circle"></div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-300">Text Size</span>
+          <div class="flex items-center flex-1 max-w-xs ml-4">
+            <span class="text-sm">a</span>
+            <input
+              type="range"
+              id="textSizeSlider"
+              min="12"
+              max="24"
+              value="16"
+              class="w-full mx-2 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+            >
+            <span class="text-xl">A</span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-300">Particle Blur</span>
+          <div id="particleBlurToggle" class="toggle toggle-off">
+            <div class="circle"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const html = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const themeSelector = document.getElementById('themeSelector');
+    const themeDropdown = document.getElementById('themeDropdown');
+    const proxyContainer = document.getElementById('proxyContainer');
+    const proxyFrame = document.getElementById('proxyFrame');
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const adBlockToggle = document.getElementById('adBlockToggle');
+    const adBlockMethod = document.getElementById('adBlockMethod');
+    const brightnessSlider = document.getElementById('brightnessSlider');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const minimizeBtn = document.getElementById('minimizeBtn');
+    const iframeBtn = document.getElementById('iframeBtn');
+    const newWindowBtn = document.getElementById('newWindowBtn');
+    const qualityToggle = document.getElementById('qualityToggle');
+    const textSizeSlider = document.getElementById('textSizeSlider');
+    const particleBlurToggle = document.getElementById('particleBlurToggle');
+
+    let isAdBlockEnabled = false;
+    let currentAdBlockMethod = 'curse';
+    let useIframe = true;
+
+    brightnessSlider.addEventListener('input', (e) => {
+      const value = e.target.value;
+      document.body.style.filter = `brightness(${value}%)`;
+    });
+
+    iframeBtn.addEventListener('click', () => {
+      iframeBtn.classList.add('active');
+      newWindowBtn.classList.remove('active');
+      useIframe = true;
+    });
+
+    newWindowBtn.addEventListener('click', () => {
+      newWindowBtn.classList.add('active');
+      iframeBtn.classList.remove('active');
+      useIframe = false;
+    });
+
+    qualityToggle.addEventListener('click', () => {
+      qualityToggle.classList.toggle('toggle-on');
+      qualityToggle.classList.toggle('toggle-off');
+      document.body.classList.toggle('quality-reduced');
+      
+      if (qualityToggle.classList.contains('toggle-on')) {
+        document.querySelectorAll('.cyber-blob').forEach(blob => {
+          blob.style.animationDuration = '3s';
         });
-
-        iframeBtn.addEventListener('click', () => {
-            iframeBtn.classList.add('active');
-            newWindowBtn.classList.remove('active');
-            useIframe = true;
+      } else {
+        document.querySelectorAll('.cyber-blob').forEach(blob => {
+          blob.style.animationDuration = '1.5s';
         });
+      }
+    });
 
-        newWindowBtn.addEventListener('click', () => {
-            newWindowBtn.classList.remove('active');
-            iframeBtn.classList.add('active');
-            useIframe = false;
-        });
+    textSizeSlider.addEventListener('input', (e) => {
+      const size = e.target.value;
+      document.body.style.fontSize = `${size}px`;
+    });
 
-        qualityToggle.addEventListener('click', () => {
-            qualityToggle.classList.toggle('toggle-on');
-            qualityToggle.classList.toggle('toggle-off');
-            document.body.classList.toggle('quality-reduced');
-            
-            if (qualityToggle.classList.contains('toggle-on')) {
-                document.querySelectorAll('.cyber-blob').forEach(blob => {
-                    blob.style.animationDuration = '3s';
-                });
-            } else {
-                document.querySelectorAll('.cyber-blob').forEach(blob => {
-                    blob.style.animationDuration = '1.5s';
-                });
-            }
-        });
+    particleBlurToggle.addEventListener('click', () => {
+      particleBlurToggle.classList.toggle('toggle-on');
+      particleBlurToggle.classList.toggle('toggle-off');
+      document.getElementById('canvas').classList.toggle('particles-blur');
+    });
 
-        textSizeSlider.addEventListener('input', (e) => {
-            const size = e.target.value;
-            document.body.style.fontSize = `${size}px`;
-        });
+    themeToggle.addEventListener('click', () => {
+      html.classList.toggle('light');
+      localStorage.setItem('theme', html.classList.contains('light') ? 'light' : 'dark');
+    });
 
-        particleBlurToggle.addEventListener('click', () => {
-            particleBlurToggle.classList.toggle('toggle-on');
-            particleBlurToggle.classList.toggle('toggle-off');
-            document.getElementById('canvas').classList.toggle('particles-blur');
-        });
+    themeSelector.addEventListener('click', () => {
+      themeDropdown.classList.toggle('active');
+    });
 
-        themeToggle.addEventListener('click', () => {
-            html.classList.toggle('light');
-            localStorage.setItem('theme', html.classList.contains('light') ? 'light' : 'dark');
-        });
-
-        if (localStorage.getItem('theme') === 'light') {
-            html.classList.add('light');
+    document.querySelectorAll('.theme-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const selectedTheme = item.getAttribute('data-theme');
+        html.setAttribute('data-theme', selectedTheme);
+        let themeLink = document.getElementById('themeStylesheet');
+        if (selectedTheme === 'default') {
+          themeLink.href = '/theme/default.css';
+        } else if (selectedTheme === 'forest') {
+          themeLink.href = '/theme/forest.css';
+        } else if (selectedTheme === 'sunset') {
+          themeLink.href = '/theme/sunset.css';
         }
+        localStorage.setItem('theme', selectedTheme);
+        themeDropdown.classList.remove('active');
+      });
+    });
 
-        themeSelector.addEventListener('click', () => {
-            themeDropdown.classList.toggle('active');
-        });
+    const savedTheme = localStorage.getItem('theme') || 'default';
+    html.setAttribute('data-theme', savedTheme);
+    (function() {
+      let themeLink = document.getElementById('themeStylesheet');
+      if (savedTheme === 'default') {
+        themeLink.href = '/theme/default.css';
+      } else if (savedTheme === 'forest') {
+        themeLink.href = '/theme/forest.css';
+      } else if (savedTheme === 'sunset') {
+        themeLink.href = '/theme/sunset.css';
+      }
+    })();
 
-        document.querySelectorAll('.theme-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const selectedTheme = item.getAttribute('data-theme');
-                html.setAttribute('data-theme', selectedTheme);
-                
-                if (selectedTheme === "forest") {
-                    const forestLink = document.createElement("link");
-                    forestLink.rel = "stylesheet";
-                    forestLink.href = "/theme/forest.css";
-                    document.head.appendChild(forestLink);
-                } else {
-                    const existingForestLink = document.querySelector('link[href="/theme/forest.css"]');
-                    if (existingForestLink) {
-                        existingForestLink.remove();
-                    }
-                }
+    searchForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const query = searchInput.value.trim();
+      if (query) {
+        let url;
+        if (isValidUrl(query)) {
+          url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
+        } else {
+          url = `/api/search.js?q=${encodeURIComponent(query)}`;
+        }
+        
+        if (useIframe) {
+          proxyFrame.src = `/api/proxy.js?q=${encodeURIComponent(url)}`;
+          proxyContainer.classList.remove('hidden');
+        } else {
+          window.open(`/api/proxy.js?q=${encodeURIComponent(url)}`, '_blank');
+        }
+      }
+    });
 
-                localStorage.setItem('theme', selectedTheme);
-                themeDropdown.classList.remove('active');
-            });
-        });
+    fullscreenBtn.addEventListener('click', () => {
+      proxyContainer.classList.add('fullscreen');
+      fullscreenBtn.classList.add('hidden');
+      minimizeBtn.classList.remove('hidden');
+    });
 
-        const savedTheme = localStorage.getItem('theme') || 'default';
-        html.setAttribute('data-theme', savedTheme);
+    minimizeBtn.addEventListener('click', () => {
+      proxyContainer.classList.remove('fullscreen');
+      minimizeBtn.classList.add('hidden');
+      fullscreenBtn.classList.remove('hidden');
+    });
 
-        searchForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const query = searchInput.value.trim();
-if (query) {
-    let url;
-    if (isValidUrl(query)) {
-        url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
-    } else {
-        url = `/api/search.js?q=${encodeURIComponent(query)}`; //fix maybe?
-    }
-    if (useIframe) {
-        proxyFrame.src = `/api/proxy.js?q=${encodeURIComponent(url)}`;
-        proxyContainer.classList.remove('hidden');
-    } else {
-        window.open(`/api/proxy.js?q=${encodeURIComponent(url)}`, '_blank');
-    }
-}
-function isValidUrl(string) {
-    try {
+    adBlockToggle.addEventListener('click', () => {
+      adBlockToggle.classList.toggle('toggle-on');
+      adBlockToggle.classList.toggle('toggle-off');
+      isAdBlockEnabled = adBlockToggle.classList.contains('toggle-on');
+
+      if (isAdBlockEnabled) {
+        loadAdBlockMethod();
+      } else {
+        if (currentAdBlockMethod === 'curse') {
+          unblockAds();
+        } else if (currentAdBlockMethod === 'ublock') {
+          unblockAds();
+        } else if (currentAdBlockMethod === 'oreo') {
+            unblockAds();
+        }
+      }
+    });
+    
+    adBlockMethod.addEventListener('change', () => {
+      currentAdBlockMethod = adBlockMethod.value;
+      if (isAdBlockEnabled) {
+        loadAdBlockMethod();
+      }
+    });
+
+    function isValidUrl(string) {
+      try {
         new URL(string);
         return true;
-    } catch (_) {
+      } catch (_) {
         return false;
+      }
     }
-}
-            fullscreenBtn.addEventListener('click', () => {
-            proxyContainer.classList.add('fullscreen');
-            fullscreenBtn.classList.add('hidden');
-            minimizeBtn.classList.remove('hidden');
-        });
 
-        minimizeBtn.addEventListener('click', () => {
-            proxyContainer.classList.remove('fullscreen');
-            minimizeBtn.classList.add('hidden');
-            fullscreenBtn.classList.remove('hidden');
-        });
-
-        adBlockToggle.addEventListener('click', () => {
-            adBlockToggle.classList.toggle('toggle-on');
-            adBlockToggle.classList.toggle('toggle-off');
-            isAdBlockEnabled = adBlockToggle.classList.contains('toggle-on');
-
-            if (isAdBlockEnabled) {
-                loadAdBlockMethod();
-            } else {
-                if (currentAdBlockMethod === 'curse') {
-                    unblockAds();
-                } else if (currentAdBlockMethod === 'ublock') {
-                    unblockAds();
-                }
-            }
-        });
-        
-        adBlockMethod.addEventListener('change', () => {
-            currentAdBlockMethod = adBlockMethod.value;
-            if (isAdBlockEnabled) {
-                loadAdBlockMethod();
-            }
-        });
-
-        function isValidUrl(string) {
-            try {
-                new URL(string);
-                return true;
-            } catch (_) {
-                return false;
-            }
-        }
-
-        function loadAdBlockMethod() {
-            if (currentAdBlockMethod === 'curse') {
-                if (typeof unblockAds === 'function') unblockAds();
-                blockAds();
-            } else if (currentAdBlockMethod === 'ublock') {
-                if (typeof unblockAds === 'function') unblockAds();
-                blockAds();
-            }
-        } //note added for fi ppl ol
-    </script>
-    <script src="./adblocker/curseblock.js"></script>
-    <script src="./adblocker/ublock.js"></script>
-    <script src="/theme/particles.js"></script>
+    function loadAdBlockMethod() {
+      if (currentAdBlockMethod === 'curse') {
+        if (typeof unblockAds === 'function') unblockAds();
+        blockAds();
+      } else if (currentAdBlockMethod === 'ublock') {
+        if (typeof unblockAds === 'function') unblockAds();
+        blockAds();
+      }
+      else if (currentAdBlockMethod === 'oreo') {
+        if (typeof unblockAds === 'function') unblockAds();
+        blockAds();
+      }
+    }
+  </script>
+  <script src="./adblocker/curseblock.js"></script>
+  <script src="./adblocker/ublock.js"></script>
+  <script src="/theme/particles.js"></script>
+  <script src="./adblocker/OreoFiltering.js"></script>
 </body>
 </html>
