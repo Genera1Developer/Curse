@@ -28,7 +28,7 @@ export default async function handler(req, res) {
       url: searchUrl,
       ...(searchUrl === `${searxInstance}/search` ? {
         params: {
-          q: searchQuery,
+          q: searchQuery, //define q because we for somereason need to
           format: 'html',
           language: 'en-US',
           categories: 'general,images,videos,news',
@@ -42,9 +42,9 @@ export default async function handler(req, res) {
         'Accept-Language': 'en-US,en;q=0.5',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         'DNT': '1',
-        'Connection': 'keep-alive'
+        'Connection': 'keep-alive' //stay the fuck awake
       },
-      maxRedirects: 10,
+      maxRedirects: 10, //virus block
       timeout: 10000  
     });
     const transformStream = new Transform({
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
             (match, url) => `${type}="/api/proxy.js?q=${encodeURIComponent(searxInstance + url)}"`
           );
           chunkStr = chunkStr.replace(
-            new RegExp(`${type}=["'](https?:\/\/[^"']+)["']`, 'gi'),
+            new RegExp(`${type}=["'](https?:\/\/[^"']+)["']`, 'gi'), //HOLY GOSH, i love regex
             (match, url) => `${type}="/api/proxy.js?q=${encodeURIComponent(url)}"`
           );
         });
@@ -104,6 +104,7 @@ export default async function handler(req, res) {
           <h1 class="error">U Broke It!</h1>
           <p>An error occurred while processing your request: ${error.message}</p>
           <p>Bastard.</p>
+          <p>HA i added an extra p tag just cus i can </p>
         </body>
       </html>
     `);
