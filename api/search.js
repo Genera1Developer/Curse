@@ -33,7 +33,7 @@ export default async function handler(req, res) {
           language: 'en-US',
           categories: 'general,images,videos,news',
           theme: 'simple',
-          safesearch: 1 // no bad searches wierdos
+          safesearch: 0 // watch your fucking porn weirdos
         }
       } : {}),
       responseType: 'stream',

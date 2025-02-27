@@ -27,20 +27,13 @@ S*S.    S*S.     .S*S  S*S    S%S    .S*P  S*S.          S*S    S*S  S*S        
 
   To use this properly within your static, or dynamic site, you can follow these steps:
 
-    - Create a redirect function within your site
-    - Specify said redirect to /api/proxy.js?q={url}
+    - Create an embedd function within your site
+    - Specify said embedd to /api/proxy.js?q=${url}
     - Create a simple textbox, with the contents set to {url}
     - Create a way such as the enter button or a go button to utilize the redirect
 
   By the end of all this, you should be good to go.  
   When testing, check that the URL switches to {yoursite}//api/proxy.js?q={https}%3A%2F%2F{site}
-
-  Alternatively you can:
-
-    - Create a request to https://curse-api-server.vercel.app/api/proxy.js?q=https://{URL} 
-    - Or Put https://curse-api-server.vercel.app/api/proxy.js?q=https://{URL} in an iframe
-
-For the iframe to work https://curse-api-server.vercel.app/ MUST be unblocked.
 
 >?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?
 
