@@ -1,6 +1,6 @@
 import axios from 'axios'; //adding this note for redeplopy fix
 import { Transform } from 'stream'; //nah, glitch ur a retard bro - "redeplopy"
-
+// NO IM NOT
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
           language: 'en-US',
           categories: 'general,images,videos,news',
           theme: 'simple',
-          safesearch: 0 // watch your fucking porn weirdos
+          safesearch: 1 // watch your fucking porn weirdos | NO NO PORN
         }
       } : {}),
       responseType: 'stream',
@@ -105,6 +105,7 @@ export default async function handler(req, res) {
           <p>An error occurred while processing your request: ${error.message}</p>
           <p>Bastard.</p>
           <p>HA i added an extra p tag just cus i can </p>
+          <p>Is oreo a retard for the extra p tag??</p>
         </body>
       </html>
     `);
