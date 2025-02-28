@@ -93,11 +93,6 @@
         <div class="theme-preview" style="background: linear-gradient(135deg, #2d7a4d, #4caf50);"></div>
         Forest
       </div>
-      <div class="theme-item" data-theme="sunset">
-        <div class="theme-preview" style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
-        Sunset
-      </div>
-    </div>
 
     <header class="text-center mb-12">
       <h1 class="text-4xl font-bold mb-4 text-red" style="text-shadow: 0 0 10px var(--primary-glow)">
@@ -296,9 +291,6 @@
           themeLink.href = '/theme/default.css';
         } else if (selectedTheme === 'forest') {
           themeLink.href = '/theme/forest.css';
-        } else if (selectedTheme === 'sunset') {
-          themeLink.href = '/theme/sunset.css';
-        }
         localStorage.setItem('theme', selectedTheme);
         themeDropdown.classList.remove('active');
       });
@@ -312,9 +304,6 @@
         themeLink.href = '/theme/default.css';
       } else if (savedTheme === 'forest') {
         themeLink.href = '/theme/forest.css';
-      } else if (savedTheme === 'sunset') {
-        themeLink.href = '/theme/sunset.css';
-      }
     })();
 
     searchForm.addEventListener('submit', function(e) {
