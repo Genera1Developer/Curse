@@ -51,6 +51,12 @@
   </style>
 </head>
 <body>
+  <script>
+   
+    if (window.top !== window.self) {
+      window.top.location = window.location.href;
+    }
+  </script>
   <canvas id="canvas"></canvas>
   <div class="cyber-bg">
     <div class="cyber-blob blob-1"></div>
@@ -88,12 +94,22 @@
         <div class="theme-preview" style="background: linear-gradient(135deg, #2d7a4d, #4caf50);"></div>
         Forest
       </div>
+      <div class="theme-item" data-theme="sunset">
+        <div class="theme-preview" style="background: linear-gradient(135deg, #ff7e5f, #feb47b);"></div>
+        Sunset
+      </div>
+    </div>
 
     <header class="text-center mb-12">
       <h1 class="text-4xl font-bold mb-4 text-red" style="text-shadow: 0 0 10px var(--primary-glow)">
         CURSE
       </h1>
-      <p class="text-gray-300">12ft.io copy fr</p>
+<p id="typewriter" class="text-gray-300"></p>
+<script src="https://unpkg.com/typewriter-effect@latest/dist/core.js"></script>
+<script>
+  const typewriter = new Typewriter("#typewriter", { loop: false, delay: 50 });
+  typewriter.typeString("12ft.io copy fr", "oreo main dev frfr", "I'm so sigma" "I never said this quote, please take it off your site -glitch 2097").start();
+</script>
     </header>
     <div class="max-w-2xl mx-auto cyber-card rounded-lg p-6 mb-8">
       <form id="searchForm" class="space-y-4">
@@ -199,9 +215,7 @@
       </div>
     </div>
   </div>
-    </div>
-  </div>
-
+  
   <script>
     const html = document.documentElement;
     const themeToggle = document.getElementById('themeToggle');
@@ -247,6 +261,16 @@
       qualityToggle.classList.toggle('toggle-on');
       qualityToggle.classList.toggle('toggle-off');
       document.body.classList.toggle('quality-reduced');
+      
+      if (qualityToggle.classList.contains('toggle-on')) {
+        document.querySelectorAll('.cyber-blob').forEach(blob => {
+          blob.style.animationDuration = '3s';
+        });
+      } else {
+        document.querySelectorAll('.cyber-blob').forEach(blob => {
+          blob.style.animationDuration = '1.5s';
+        });
+      }
     });
 
     textSizeSlider.addEventListener('input', (e) => {
@@ -278,6 +302,9 @@
           themeLink.href = '/theme/default.css';
         } else if (selectedTheme === 'forest') {
           themeLink.href = '/theme/forest.css';
+        } else if (selectedTheme === 'sunset') {
+          themeLink.href = '/theme/sunset.css';
+        }
         localStorage.setItem('theme', selectedTheme);
         themeDropdown.classList.remove('active');
       });
@@ -285,22 +312,34 @@
 
     const savedTheme = localStorage.getItem('theme') || 'default';
     html.setAttribute('data-theme', savedTheme);
+    (function() {
+      let themeLink = document.getElementById('themeStylesheet');
+      if (savedTheme === 'default') {
+        themeLink.href = '/theme/default.css';
+      } else if (savedTheme === 'forest') {
+        themeLink.href = '/theme/forest.css';
+      } else if (savedTheme === 'sunset') {
+        themeLink.href = '/theme/sunset.css';
+      }
+    })();
 
     searchForm.addEventListener('submit', function(e) {
       e.preventDefault();
       const query = searchInput.value.trim();
-      let url;
-      if (isValidUrl(query)) {
-        url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
-      } else {
-        url = `/api/search.js?q=${encodeURIComponent(query)}`; //FIXY FIXY RAHHHHHHH
-      }
-      
-      if (useIframe) {
-        proxyFrame.src = `/api/proxy.js?q=${encodeURIComponent(url)}`;
-        proxyContainer.classList.remove('hidden');
-      } else {
-        window.open(`/api/proxy.js?q=${encodeURIComponent(url)}`, '_blank');
+      if (query) {
+        let url;
+        if (isValidUrl(query)) {
+          url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
+        } else {
+          url = `/api/search.js?q=${encodeURIComponent(query)}`;
+        }
+        
+        if (useIframe) {
+          proxyFrame.src = `/api/proxy.js?q=${encodeURIComponent(url)}`;
+          proxyContainer.classList.remove('hidden');
+        } else {
+          window.open(`/api/proxy.js?q=${encodeURIComponent(url)}`, '_blank');
+        }
       }
     });
 
@@ -316,12 +355,51 @@
       fullscreenBtn.classList.remove('hidden');
     });
 
+    adBlockToggle.addEventListener('click', () => {
+      adBlockToggle.classList.toggle('toggle-on');
+      adBlockToggle.classList.toggle('toggle-off');
+      isAdBlockEnabled = adBlockToggle.classList.contains('toggle-on');
+
+      if (isAdBlockEnabled) {
+        loadAdBlockMethod();
+      } else {
+        if (currentAdBlockMethod === 'curse') {
+          unblockAds();
+        } else if (currentAdBlockMethod === 'ublock') {
+          unblockAds();
+        } else if (currentAdBlockMethod === 'oreo') {
+            unblockAds();
+        }
+      }
+    });
+    
+    adBlockMethod.addEventListener('change', () => {
+      currentAdBlockMethod = adBlockMethod.value;
+      if (isAdBlockEnabled) {
+        loadAdBlockMethod();
+      }
+    });
+
     function isValidUrl(string) {
       try {
         new URL(string);
         return true;
       } catch (_) {
         return false;
+      }
+    }
+
+    function loadAdBlockMethod() {
+      if (currentAdBlockMethod === 'curse') {
+        if (typeof unblockAds === 'function') unblockAds();
+        blockAds();
+      } else if (currentAdBlockMethod === 'ublock') {
+        if (typeof unblockAds === 'function') unblockAds();
+        blockAds();
+      }
+      else if (currentAdBlockMethod === 'oreo') {
+        if (typeof unblockAds === 'function') unblockAds();
+        blockAds();
       }
     }
   </script>
