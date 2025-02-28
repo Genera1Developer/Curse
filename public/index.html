@@ -332,15 +332,20 @@
         let url;
         if (isValidUrl(query)) {
           url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
+          
+          if (useIframe) {
+            proxyFrame.src = `/api/proxy.js?q=${encodeURIComponent(url)}`;
+            proxyContainer.classList.remove('hidden');
+          } else {
+            window.open(`/api/proxy.js?q=${encodeURIComponent(url)}`, '_blank');
+          }
         } else {
-          url = `/api/search.js?q=${encodeURIComponent(query)}`;
-        }
-        
-        if (useIframe) {
-          proxyFrame.src = `/api/proxy.js?q=${encodeURIComponent(url)}`;
-          proxyContainer.classList.remove('hidden');
-        } else {
-          window.open(`/api/proxy.js?q=${encodeURIComponent(url)}`, '_blank');
+          if (useIframe) {
+            proxyFrame.src = `/api/search.js?q=${encodeURIComponent(query)}`;
+            proxyContainer.classList.remove('hidden');
+          } else {
+            window.open(`/api/search.js?q=${encodeURIComponent(query)}`, '_blank');
+          }
         }
       }
     });
@@ -370,7 +375,7 @@
         } else if (currentAdBlockMethod === 'ublock') {
           unblockAds();
         } else if (currentAdBlockMethod === 'oreo') {
-            unblockAds();
+          unblockAds();
         }
       }
     });
@@ -384,8 +389,8 @@
 
     function isValidUrl(string) {
       try {
-        new URL(string);
-        return true;
+        new URL(string.startsWith('http://') || string.startsWith('https://') ? string : `https://${string}`);
+        return /\..+/.test(string); // booty
       } catch (_) {
         return false;
       }
