@@ -57,7 +57,7 @@ export default async function handler(req, res) {
             (match, url) => `${type}="/api/proxy.js?q=${encodeURIComponent(searxInstance + url)}"`
           );
           chunkStr = chunkStr.replace(
-            new RegExp(`${type}=["'](https?:\/\/[^"']+)["']`, 'gi'), //HOLY GOSH, i love regex
+            new RegExp(`${type}=["'](https?:\/\/[^"']+)["']`, 'gi'), //HOLY SHIT, i love regex
             (match, url) => `${type}="/api/proxy.js?q=${encodeURIComponent(url)}"`
           );
         });
