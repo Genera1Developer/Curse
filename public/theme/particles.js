@@ -47,7 +47,7 @@ function animate() {
     requestAnimationFrame(animate);
 }
 
-initParticles(200);
+initParticles(2000);
 animate();
 
 window.addEventListener('resize', () => {
