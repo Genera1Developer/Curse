@@ -1,4 +1,4 @@
-pimport axios from 'axios'; //adding this note for redeplopy fix
+import axios from 'axios'; //adding this note for redeplopy fix
 import { Transform } from 'stream'; //nah, glitch ur a retard bro - "redeplopy"
 // NO IM NOT
 export default async function handler(req, res) {
