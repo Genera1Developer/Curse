@@ -23,6 +23,18 @@ export default async function handler(req, res) {
     } catch {
       searchUrl = `${searxInstance}/search`;
     }
+    
+    // Get the content type from the original URL before making the request
+    let isAsset = false;
+    try {
+      const assetCheck = searchQuery.toLowerCase();
+      isAsset = assetCheck.endsWith('.css') || assetCheck.endsWith('.js') || 
+                assetCheck.endsWith('.jpg') || assetCheck.endsWith('.png') || 
+                assetCheck.endsWith('.gif') || assetCheck.endsWith('.svg') ||
+                assetCheck.endsWith('.woff') || assetCheck.endsWith('.woff2') ||
+                assetCheck.endsWith('.ttf');
+    } catch {}
+    
     const response = await axios({
       method: 'GET',
       url: searchUrl,
@@ -42,25 +54,60 @@ export default async function handler(req, res) {
         'Accept-Language': 'en-US,en;q=0.5',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
         'DNT': '1',
-        'Connection': 'keep-alive' //stay the fuck awake
+        'Connection': 'keep-alive', //stay the fuck awake
+        'Referer': searxInstance
       },
       maxRedirects: 10, //virus block
       timeout: 10000  
     });
+    const contentType = response.headers['content-type'] || '';
+    if (isAsset || !contentType.includes('text/html')) {
+      const headers = response.headers;
+      for (const [key, value] of Object.entries(headers)) {
+        if (!['content-length', 'content-encoding', 'transfer-encoding'].includes(key.toLowerCase())) {
+          res.setHeader(key, value);
+        }
+      }
+      response.data.pipe(res);
+      return;
+    }
+    
     const transformStream = new Transform({
       transform(chunk, encoding, callback) {
         let chunkStr = chunk.toString('utf8');
         const resourceTypes = ['href', 'src', 'action', 'data-url', 'poster'];
+        
         resourceTypes.forEach(type => {
           chunkStr = chunkStr.replace(
             new RegExp(`${type}=["'](\/[^"']+)["']`, 'gi'),
             (match, url) => `${type}="/api/proxy?q=${encodeURIComponent(searxInstance + url)}"`
           );
           chunkStr = chunkStr.replace(
+            new RegExp(`${type}=["'](?!http|\/\/|data:|blob:|javascript:)([^\/][^"']+)["']`, 'gi'),
+            (match, url) => `${type}="/api/proxy?q=${encodeURIComponent(searxInstance + '/' + url)}"`
+          );
+          
+          chunkStr = chunkStr.replace(
             new RegExp(`${type}=["'](https?:\/\/[^"']+)["']`, 'gi'), //HOLY SHIT, i love regex
             (match, url) => `${type}="/api/proxy?q=${encodeURIComponent(url)}"`
           );
         });
+        
+        chunkStr = chunkStr.replace(
+          /url\(['"]?([^")]+)['"]?\)/gi,
+          (match, url) => {
+            if (url.startsWith('data:') || url.startsWith('blob:')) {
+              return match;
+            }
+            const fullUrl = url.startsWith('/') 
+              ? searxInstance + url 
+              : url.startsWith('http') 
+                ? url 
+                : searxInstance + '/' + url;
+            return `url("/api/proxy?q=${encodeURIComponent(fullUrl)}")`;
+          }
+        );
+        
         if (chunkStr.includes('<head>')) {
           const csp = "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: *;\">";
           chunkStr = chunkStr.replace('<head>', `<head>${csp}`);
@@ -69,6 +116,7 @@ export default async function handler(req, res) {
         callback(null, chunkStr);
       }
     });
+    
     const headers = response.headers;
     for (const [key, value] of Object.entries(headers)) {
       if (!['content-length', 'content-encoding', 'transfer-encoding'].includes(key.toLowerCase())) {
