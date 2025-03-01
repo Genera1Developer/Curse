@@ -54,11 +54,11 @@ export default async function handler(req, res) {
         resourceTypes.forEach(type => {
           chunkStr = chunkStr.replace(
             new RegExp(`${type}=["'](\/[^"']+)["']`, 'gi'),
-            (match, url) => `${type}="/api/proxy.js?q=${encodeURIComponent(searxInstance + url)}"`
+            (match, url) => `${type}="/api/proxy?q=${encodeURIComponent(searxInstance + url)}"`
           );
           chunkStr = chunkStr.replace(
             new RegExp(`${type}=["'](https?:\/\/[^"']+)["']`, 'gi'), //HOLY SHIT, i love regex
-            (match, url) => `${type}="/api/proxy.js?q=${encodeURIComponent(url)}"`
+            (match, url) => `${type}="/api/proxy?q=${encodeURIComponent(url)}"`
           );
         });
         if (chunkStr.includes('<head>')) {
@@ -118,5 +118,3 @@ export const config = {
     responseLimit: false,
   },
 };
-<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
