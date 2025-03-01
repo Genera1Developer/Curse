@@ -1,4 +1,4 @@
-import axios from 'axios'; //adding this note for redeplopy fix
+pimport axios from 'axios'; //adding this note for redeplopy fix
 import { Transform } from 'stream'; //nah, glitch ur a retard bro - "redeplopy"
 // NO IM NOT
 export default async function handler(req, res) {
@@ -26,7 +26,7 @@ export default async function handler(req, res) {
     const response = await axios({
       method: 'GET',
       url: searchUrl,
-       searchUrl === `${searxInstance}/search` ? {
+      ...(searchUrl === `${searxInstance}/search` ? {
         params: {
           q: searchQuery, //define q because we for somereason need to
           format: 'html',
