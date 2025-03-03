@@ -341,7 +341,7 @@
           }
         } else {
           if (useIframe) {
-            proxyFrame.src = `/api/search.js?q=https://searx.be/search?q=${encodeURIComponent(query)}`;
+            proxyFrame.src = `/api/search.js?q=https://searx.be/search?q=${encodeURIComponent(query)}`; //i was told to add a comment so it commits right
             proxyContainer.classList.remove('hidden');
           } else {
             window.open(`/api/search.js?q=https://searx.be/search?q=${encodeURIComponent(query)}`, '_blank');
