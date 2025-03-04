@@ -72,3 +72,6 @@ That being said all this code was made myself through painful hours of work, so 
 
 ## Frogie Glaze is crazy
 My school is currently glazing tf outa frogies arcade, even though almost every game loads its slow as hell and doesn't support the mobile devices we use (some don't even work for fucking chromebook)
+
+## To all you retarded skids
+No.  Iframes don't unblock shit.
