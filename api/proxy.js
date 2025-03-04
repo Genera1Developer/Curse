@@ -132,6 +132,7 @@ app.get('/api/proxy.js', async (req, res) => {
 // startic
 app.use(express.static('public'));
 // im quoting that⬆️
+// you fucker.                                                                                                                                                                                 you aint nothing but a broke fein lmaoooooooooooooooooooooooooooooo
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
