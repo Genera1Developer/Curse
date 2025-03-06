@@ -43,7 +43,7 @@
       overflow: auto;
       z-index: 1000;
     }
-  
+
     #proxyFrame {
       width: 100%;
       height: 100%;
@@ -56,7 +56,6 @@
   <script type="text/javascript" src="https://www.free-counters.org/count/hdb6"></script><br>
  <a href='https://www.pferdeversicherung.at/pferdelebensversicherung/'>Counter.</a> <script type='text/javascript' src='https://whomania.com/ctr?id=84e234aef3c5891d8d8efe27c026b3115d8d0887'></script>
   <script>
-   
     if (window.top !== window.self) {
       window.top.location = window.location.href;
     }
@@ -108,12 +107,12 @@
       <h1 class="text-4xl font-bold mb-4 text-red" style="text-shadow: 0 0 10px var(--primary-glow)">
         CURSE
       </h1>
-<p id="typewriter" class="text-gray-300"></p>
-<script src="https://unpkg.com/typewriter-effect@latest/dist/core.js"></script>
-<script>
-  const typewriter = new Typewriter("#typewriter", { loop: false, delay: 50 }); //fuckkkkkkkkkk
-  typewriter.typeString("12ft.io copy fr", "oreo main dev frfr", "I'm so sigma" "I never said this quote, please take it off your site -glitch 2097").start();
-</script>
+      <p id="typewriter" class="text-gray-300"></p>
+      <script src="https://unpkg.com/typewriter-effect@latest/dist/core.js"></script>
+      <script>
+        const typewriter = new Typewriter("#typewriter", { loop: false, delay: 50 });
+        typewriter.typeString("12ft.io copy fr", "oreo main dev frfr", "I'm so sigma", "I never said this quote, please take it off your site -glitch 2097").start();
+      </script>
     </header>
     <div class="max-w-2xl mx-auto cyber-card rounded-lg p-6 mb-8">
       <form id="searchForm" class="space-y-4">
@@ -143,7 +142,7 @@
       </div>
       <iframe id="proxyFrame"></iframe>
       <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
+      <script>eruda.init();</script>
     </div>
 
     <div class="max-w-2xl mx-auto cyber-card rounded-lg p-6">
@@ -285,70 +284,35 @@
     particleBlurToggle.addEventListener('click', () => {
       particleBlurToggle.classList.toggle('toggle-on');
       particleBlurToggle.classList.toggle('toggle-off');
-      document.getElementById('canvas').classList.toggle('particles-blur');
-    });
-
-    themeToggle.addEventListener('click', () => {
-      html.classList.toggle('light');
-      localStorage.setItem('theme', html.classList.contains('light') ? 'light' : 'dark');
-    });
-
-    themeSelector.addEventListener('click', () => {
-      themeDropdown.classList.toggle('active');
-    });
-
-    document.querySelectorAll('.theme-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const selectedTheme = item.getAttribute('data-theme');
-        html.setAttribute('data-theme', selectedTheme);
-        let themeLink = document.getElementById('themeStylesheet');
-        if (selectedTheme === 'default') {
-          themeLink.href = '/theme/default.css';
-        } else if (selectedTheme === 'forest') {
-          themeLink.href = '/theme/forest.css';
-        } else if (selectedTheme === 'sunset') {
-          themeLink.href = '/theme/sunset.css';
-        }
-        localStorage.setItem('theme', selectedTheme);
-        themeDropdown.classList.remove('active');
+      document.querySelectorAll('.cyber-blob').forEach(blob => {
+        blob.classList.toggle('particles-blur');
       });
     });
 
-    const savedTheme = localStorage.getItem('theme') || 'default';
-    html.setAttribute('data-theme', savedTheme);
-    (function() {
-      let themeLink = document.getElementById('themeStylesheet');
-      if (savedTheme === 'default') {
-        themeLink.href = '/theme/default.css';
-      } else if (savedTheme === 'forest') {
-        themeLink.href = '/theme/forest.css';
-      } else if (savedTheme === 'sunset') {
-        themeLink.href = '/theme/sunset.css';
-      }
-    })();
+    themeToggle.addEventListener('click', () => {
+      html.classList.toggle('dark');
+      themeToggle.querySelector('.theme-icon-light').classList.toggle('hidden');
+      themeToggle.querySelector('.theme-icon-dark').classList.toggle('hidden');
+    });
 
-    searchForm.addEventListener('submit', function(e) {
+    themeSelector.addEventListener('click', () => {
+      themeDropdown.classList.toggle('hidden');
+    });
+
+    themeDropdown.addEventListener('click', (e) => {
+      if (e.target.classList.contains('theme-item')) {
+        const theme = e.target.getAttribute('data-theme');
+        document.getElementById('themeStylesheet').href = `/theme/${theme}.css`;
+        themeDropdown.classList.add('hidden');
+      }
+    });
+
+    searchForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const query = searchInput.value.trim();
+      const query = searchInput.value;
       if (query) {
-        let url;
-        if (isValidUrl(query)) {
-          url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
-          
-          if (useIframe) {
-            proxyFrame.src = `/api/proxy.js?q=${encodeURIComponent(url)}`;
-            proxyContainer.classList.remove('hidden');
-          } else {
-            window.open(`/api/proxy.js?q=${encodeURIComponent(url)}`, '_blank');
-          }
-        } else {
-          if (useIframe) {
-            proxyFrame.src = `/api/proxy.js?q=https://searx.bndkt.io/search?q=${encodeURIComponent(query)}&from=os&clid=1836588`; //i was told to add a comment so it commits right
-            proxyContainer.classList.remove('hidden');
-          } else {
-            window.open(`/api/proxy.js?q=https://searx.bndkt.io/search?q=${encodeURIComponent(query)}&from=os&clid=1836588`, '_blank');
-          }
-        }
+        proxyContainer.classList.remove('hidden');
+        proxyFrame.src = query.startsWith('http') ? query : `https://${query}`;
       }
     });
 
@@ -360,61 +324,19 @@
 
     minimizeBtn.addEventListener('click', () => {
       proxyContainer.classList.remove('fullscreen');
-      minimizeBtn.classList.add('hidden');
       fullscreenBtn.classList.remove('hidden');
+      minimizeBtn.classList.add('hidden');
     });
 
     adBlockToggle.addEventListener('click', () => {
+      isAdBlockEnabled = !isAdBlockEnabled;
       adBlockToggle.classList.toggle('toggle-on');
       adBlockToggle.classList.toggle('toggle-off');
-      isAdBlockEnabled = adBlockToggle.classList.contains('toggle-on');
-
-      if (isAdBlockEnabled) {
-        loadAdBlockMethod();
-      } else {
-        if (currentAdBlockMethod === 'curse') {
-          unblockAds();
-        } else if (currentAdBlockMethod === 'ublock') {
-          unblockAds();
-        } else if (currentAdBlockMethod === 'oreo') {
-          unblockAds();
-        }
-      }
-    });
-    
-    adBlockMethod.addEventListener('change', () => {
-      currentAdBlockMethod = adBlockMethod.value;
-      if (isAdBlockEnabled) {
-        loadAdBlockMethod();
-      }
     });
 
-    function isValidUrl(string) {
-      try {
-        new URL(string.startsWith('http://') || string.startsWith('https://') ? string : `https://${string}`);
-        return /\..+/.test(string); // booty
-      } catch (_) {
-        return false;
-      }
-    }
-
-    function loadAdBlockMethod() {
-      if (currentAdBlockMethod === 'curse') {
-        if (typeof unblockAds === 'function') unblockAds();
-        blockAds();
-      } else if (currentAdBlockMethod === 'ublock') {
-        if (typeof unblockAds === 'function') unblockAds();
-        blockAds();
-      }
-      else if (currentAdBlockMethod === 'oreo') {
-        if (typeof unblockAds === 'function') unblockAds();
-        blockAds();
-      } //deploy fix note AGAIN
-    }
+    adBlockMethod.addEventListener('change', (e) => {
+      currentAdBlockMethod = e.target.value;
+    });
   </script>
-  <script src="./adblocker/curseblock.js"></script>
-  <script src="./adblocker/ublock.js"></script>
-  <script src="/theme/particles.js"></script>
-  <script src="./adblocker/OreoFiltering.js"></script>
 </body>
 </html>
