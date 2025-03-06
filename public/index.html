@@ -9,8 +9,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
   <link rel="stylesheet" href="/visuals/dropdown.css">
   <link rel="stylesheet" href="/theme/particles.css">
-  <link rel="icon" href="./assets/f.png" type="image/x-icon">
-  <meta property="og:description" content="Curse | Education at its finest | Made by Glitch and Oreo">
   <style>
     .button-group button.active {
       background: var(--primary-glow);
@@ -246,7 +244,7 @@
 
     brightnessSlider.addEventListener('input', (e) => {
       const value = e.target.value;
-      document.body.style.filter = brightness(${value}%);
+      document.body.style.filter = `brightness(${value}%)`;
     });
 
     iframeBtn.addEventListener('click', () => {
@@ -279,7 +277,7 @@
 
     textSizeSlider.addEventListener('input', (e) => {
       const size = e.target.value;
-      document.body.style.fontSize = ${size}px;
+      document.body.style.fontSize = `${size}px`;
     });
 
     particleBlurToggle.addEventListener('click', () => {
@@ -333,20 +331,20 @@
       if (query) {
         let url;
         if (isValidUrl(query)) {
-          url = query.startsWith('http://') || query.startsWith('https://') ? query : https://${query};
+          url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
           
           if (useIframe) {
-            proxyFrame.src = /api/proxy.js?q=${encodeURIComponent(url)};
+            proxyFrame.src = `/api/proxy.js?q=${encodeURIComponent(url)}`;
             proxyContainer.classList.remove('hidden');
           } else {
-            window.open(/api/proxy.js?q=${encodeURIComponent(url)}, '_blank');
+            window.open(`/api/proxy.js?q=${encodeURIComponent(url)}`, '_blank');
           }
         } else {
           if (useIframe) {
-            proxyFrame.src = /api/proxy.js?q=https://searx.bndkt.io/search?q=${encodeURIComponent(query)}&from=os&clid=1836588; //i was told to add a comment so it commits right
+            proxyFrame.src = `/api/proxy.js?q=https://searx.bndkt.io/search?q=${encodeURIComponent(query)}&from=os&clid=1836588`; //i was told to add a comment so it commits right
             proxyContainer.classList.remove('hidden');
           } else {
-            window.open(/api/proxy.js?q=https://searx.bndkt.io/search?q=${encodeURIComponent(query)}&from=os&clid=1836588, '_blank');
+            window.open(`/api/proxy.js?q=https://searx.bndkt.io/search?q=${encodeURIComponent(query)}&from=os&clid=1836588`, '_blank');
           }
         }
       }
@@ -391,7 +389,7 @@
 
     function isValidUrl(string) {
       try {
-        new URL(string.startsWith('http://') || string.startsWith('https://') ? string : https://${string});
+        new URL(string.startsWith('http://') || string.startsWith('https://') ? string : `https://${string}`);
         return /\..+/.test(string); // booty
       } catch (_) {
         return false;
