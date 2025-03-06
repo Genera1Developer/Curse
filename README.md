@@ -76,5 +76,6 @@ My school is currently glazing tf outa frogies arcade, even though almost every 
 ## To all you retarded skids
 No.  Iframes don't unblock shit.
 
-# Logo (NEW(
-https://raw.githubusercontent.com/Genera1Developer/Curse/refs/heads/main/assets/f.png
+# Logo (NEW)
+
+<img src="https://raw.githubusercontent.com/Genera1Developer/Curse/refs/heads/main/assets/f.png" alt="HOW THE FUCK DID YOU BREAK THIS???">
