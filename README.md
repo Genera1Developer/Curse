@@ -78,8 +78,7 @@ No.  Iframes don't unblock shit.
 
 # SKID ALLEGATIONS:
 He got angry abt me being honest, he got pissed at project auto which is quite literally stated its an AI run repository, alll while his description is more horny than my last ex.  Crazy work
-
-image here in a min
+<img src="/assets/retard1.png" alt="How did you manage to fuck up a readme??">
 
 Username: ssub69
 
