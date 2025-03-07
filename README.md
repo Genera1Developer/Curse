@@ -79,3 +79,24 @@ No.  Iframes don't unblock shit.
 # Logo (NEW)
 
 <img src="https://raw.githubusercontent.com/Genera1Developer/Curse/refs/heads/main/assets/f.png" alt="HOW THE FUCK DID YOU BREAK THIS???">
+
+
+# SKID ALLEGATIONS:
+He got angry abt me being honest, he got pissed at project auto which is quite literally stated its an AI run repository, alll while his description is more horny than my last ex.  Crazy work
+image here in a min
+Username: ssub69
+User ID: 1232085058769129522
+Extra: ```   "id": "1232085058769129522",
+  "username": "ssub69",
+  "avatar": "https://cdn.discordapp.com/avatars/1232085058769129522/7014fd31dbbe1d3a98ef008894d23734",
+  "discriminator": "0",
+  "public_flags": 0,
+  "flags": 0,
+  "banner": null,
+  "accent_color": null,
+  "global_name": "Ssub",
+  "avatar_decoration_data": null,
+  "collectibles": null,
+  "banner_color": null,
+  "clan": null,
+  "primary_guild": null, ```
