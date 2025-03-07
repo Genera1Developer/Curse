@@ -133,7 +133,7 @@ app.get('/api/proxy.js', async (req, res) => {
 app.use(express.static('public'));
 // im quoting that⬆️
 // you fucker.                                                                                                                                                                                 you aint nothing but a broke fein lmaoooooooooooooooooooooooooooooo
-
+// luh u too pooks
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
