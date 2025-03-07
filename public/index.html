@@ -334,17 +334,17 @@
           url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
           
           if (useIframe) {
-            proxyFrame.src = `/api/proxy.js?q=${encodeURIComponent(url)}`;
+            proxyFrame.src = `/api/window.js?q=${encodeURIComponent(url)}`;
             proxyContainer.classList.remove('hidden');
           } else {
-            window.open(`/api/proxy.js?q=${encodeURIComponent(url)}`, '_blank');
+            window.open(`/api/window.js?q=${encodeURIComponent(url)}`, '_blank');
           }
         } else {
           if (useIframe) {
-            proxyFrame.src = `/api/proxy.js?q=https://searx.bndkt.io/search?q=${encodeURIComponent(query)}&from=os&clid=1836588`; //i was told to add a comment so it commits right
+            proxyFrame.src = `/api/window.js?q=https://searx.bndkt.io/search?q=${encodeURIComponent(query)}&from=os&clid=1836588`; //i was told to add a comment so it commits right
             proxyContainer.classList.remove('hidden');
           } else {
-            window.open(`/api/proxy.js?q=https://searx.bndkt.io/search?q=${encodeURIComponent(query)}&from=os&clid=1836588`, '_blank');
+            window.open(`/api/window.js?q=https://searx.bndkt.io/search?q=${encodeURIComponent(query)}&from=os&clid=1836588`, '_blank');
           }
         }
       }
