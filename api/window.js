@@ -36,23 +36,23 @@ const isAbsoluteURL = (url) => {
 
 const createProxyUrl = (url, baseUrl) => {
   if (!url) return url;
-  if (url.startsWith('/api/proxy.js')) return url;
+  if (url.startsWith('/api/window.js')) return url; //convert to windowism all hail window
 
   if (isAbsoluteURL(url)) {
-    return `/api/proxy.js?q=${encodeURIComponent(url)}`;
+    return `/api/window.js?q=${encodeURIComponent(url)}`;
   }
 
   if (baseUrl) {
     const base = new URL(baseUrl);
     const absoluteUrl = new URL(url, base).href;
-    return `/api/proxy.js?q=${encodeURIComponent(absoluteUrl)}`;
+    return `/api/window.js?q=${encodeURIComponent(absoluteUrl)}`;
   }
 
   // Fallback cuz why not
   return url;
 };
 
-app.get('/api/proxy.js', async (req, res) => {
+app.get('/api/window.js', async (req, res) => {
   const { q } = req.query; // url to proxyer
 
   if (!q) {
