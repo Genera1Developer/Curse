@@ -334,7 +334,7 @@
           url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
           
           if (useIframe) {
-            proxyFrame.src = `/api/window.js?q=${encodeURIComponent(url)}`;
+            proxyFrame.src = `/api/window.js?q=${encodeURIComponent(url)}`; //window bc /proxy.js is detected by security😬
             proxyContainer.classList.remove('hidden');
           } else {
             window.open(`/api/window.js?q=${encodeURIComponent(url)}`, '_blank');
