@@ -1,4 +1,76 @@
-(async()=>{let t=await fetch("/adblocker/filters/easylist.txt").then(t=>t.text()),e=t.split("\n").filter(t=>t.trim()&&"!"!==t.trim()[0]),r=e.map(t=>t.replace(/([.?+^$[\]\\(){}|-])/g,"\\$1").replace(/\*/g,".*?").replace(/^@@\|\|/,".*://").replace(/^\|\|/,"^https?://").replace(/^@@/,"^https?://(?!").replace(/^\|/,"^").replace(/\|$/,"$")),n=new RegExp(r.join("|"),"i"),o=new Set(["img","script","iframe","object","embed","video","audio","source","link","style"]);function a(t){return n.test(t)}function c(t){let e=new URL(t.src||"",location.href).href;a(e)&&(t.remove(),t.src="",t.srcset="",t.href="data:,")}function l(t){let e=new URL(t.detail.url||"",location.href).href;a(e)&&t.preventDefault()}function i(){for(let t of document.querySelectorAll(o.size?Array.from(o).join(","):"*"))c(t)}function s(t){if("object"==typeof t&&"src"in t){let e=new URL(t.src||"",location.href).href;a(e)&&(t.src="",t.srcset="",t.href="data:,")}}function u(t){if("string"==typeof t){let e=new URL(t,location.href).href;a(e)&&(t="data:,")}}function f(t){return a(t.url)?Promise.reject({type:"filtering",url:t.url}):fetch(t.url,t)}function p(){MutationObserver&&(new MutationObserver(t=>{for(let e of t)for(let t of e.addedNodes)1===t.nodeType&&s(t)})).observe(document,{childList:!0,subtree:!0}),window.XMLHttpRequest&&(XMLHttpRequest.prototype.open=new Proxy(XMLHttpRequest.prototype.open,{apply:(t,e,r)=>{if(a(r[1]))return;return t.apply(e,r)}})),window.fetch&&(window.fetch=new Proxy(fetch,{apply:(t,e,r)=>f(r[0])})),EventTarget.prototype.addEventListener&&(EventTarget.prototype.addEventListener=new Proxy(EventTarget.prototype.addEventListener,{apply:(t,e,r)=>{if("beforescriptexecute"===r[0]||"beforeload"===r[0]){if(a(r[1]))return}return t.apply(e,r)}})),document.addEventListener("DOMContentLoaded",i),document.addEventListener("beforeload",l,!0),document.addEventListener("beforescriptexecute",l,!0),window.open=new Proxy(window.open,{apply:(t,e,r)=>a(r[0])?null:t.apply(e,r)})}p()})();
-// haha get obsfucated monkey <3
-//glitch is a gay pedophile frfr
-// i cant be a pedo if im a minor😛
+(async () => {
+  const t = await fetch("/adblocker/filters/easylist.txt").then(res => res.text());
+  const e = t.split("\n").filter(line => line.trim() && line[0] !== "!");
+  const r = e.map(line => line
+    .replace(/([.?+^$[\]\\(){}|-])/g, "\\$1")
+    .replace(/\*/g, ".*?")
+    .replace(/^@@\|\|/, ".*://")
+    .replace(/^\|\|/, "^https?://")
+    .replace(/^@@/, "^https?://(?!")
+    .replace(/^\|/, "^")
+    .replace(/\|$/, "$"));
+  const n = new RegExp(r.join("|"), "i");
+  const o = new Set(["img", "script", "iframe", "object", "embed", "video", "audio", "source", "link", "style"]);
+
+  const a = url => n.test(url);
+  const c = el => {
+    const url = new URL(el.src || "", location.href).href;
+    if (a(url)) {
+      el.remove();
+      el.src = el.srcset = el.href = "data:,";
+    }
+  };
+  const l = event => {
+    const url = new URL(event.detail.url || "", location.href).href;
+    if (a(url)) event.preventDefault();
+  };
+  const i = () => {
+    document.querySelectorAll(o.size ? Array.from(o).join(",") : "*").forEach(c);
+  };
+  const s = el => {
+    if (el.src) {
+      const url = new URL(el.src, location.href).href;
+      if (a(url)) el.src = el.srcset = el.href = "data:,";
+    }
+  };
+  const u = url => {
+    if (typeof url === "string" && a(new URL(url, location.href).href)) {
+      return "data:,";
+    }
+  };
+  const f = req => a(req.url) ? Promise.reject({ type: "filtering", url: req.url }) : fetch(req.url, req);
+
+  const p = () => {
+    if (MutationObserver) {
+      new MutationObserver(mutations => mutations.forEach(m => {
+        m.addedNodes.forEach(node => node.nodeType === 1 && s(node));
+      })).observe(document, { childList: true, subtree: true });
+    }
+    if (window.XMLHttpRequest) {
+      window.XMLHttpRequest.prototype.open = new Proxy(XMLHttpRequest.prototype.open, {
+        apply: (target, thisArg, args) => a(args[1]) ? undefined : target.apply(thisArg, args),
+      });
+    }
+    if (window.fetch) {
+      window.fetch = new Proxy(fetch, {
+        apply: (target, thisArg, args) => f(args[0]),
+      });
+    }
+    if (EventTarget.prototype.addEventListener) {
+      EventTarget.prototype.addEventListener = new Proxy(EventTarget.prototype.addEventListener, {
+        apply: (target, thisArg, args) => {
+          if (["beforescriptexecute", "beforeload"].includes(args[0]) && a(args[1])) return;
+          return target.apply(thisArg, args);
+        },
+      });
+    }
+    document.addEventListener("DOMContentLoaded", i);
+    document.addEventListener("beforeload", l, true);
+    document.addEventListener("beforescriptexecute", l, true);
+    window.open = new Proxy(window.open, {
+      apply: (target, thisArg, args) => a(args[0]) ? null : target.apply(thisArg, args),
+    });
+  };
+
+  p();
+})();
