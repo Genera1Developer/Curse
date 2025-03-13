@@ -1,76 +1,194 @@
 (async () => {
-  const t = await fetch("/adblocker/filters/easylist.txt").then(res => res.text());
-  const e = t.split("\n").filter(line => line.trim() && line[0] !== "!");
-  const r = e.map(line => line
-    .replace(/([.?+^$[\]\\(){}|-])/g, "\\$1")
-    .replace(/\*/g, ".*?")
-    .replace(/^@@\|\|/, ".*://")
-    .replace(/^\|\|/, "^https?://")
-    .replace(/^@@/, "^https?://(?!")
-    .replace(/^\|/, "^")
-    .replace(/\|$/, "$"));
-  const n = new RegExp(r.join("|"), "i");
-  const o = new Set(["img", "script", "iframe", "object", "embed", "video", "audio", "source", "link", "style"]);
+  const easyListURL = "/adblocker/filters/easylist.txt";
+  let filters = await fetch(easyListURL).then(t => t.text());
+  let filterList = filters.split("\n").filter(line => line.trim() && line.trim()[0] !== "!");
+  let rules = filterList.map(rule =>
+    rule
+      .replace(/([.?+^$[\]\\(){}|-])/g, "\\$1")
+      .replace(/\*/g, ".*?")
+      .replace(/^@@\|\|/, ".*://")
+      .replace(/^\|\|/, "^https?://")
+      .replace(/^@@/, "^https?://(?!")
+      .replace(/^\|/, "^")
+      .replace(/\|$/, "$")
+  );
+  const adBlockerRegex = new RegExp(rules.join("|"), "i");
 
-  const a = url => n.test(url);
-  const c = el => {
-    const url = new URL(el.src || "", location.href).href;
-    if (a(url)) {
+  const blockedElements = new Set(["img", "script", "iframe", "object", "embed", "video", "audio", "source", "link", "style", "frame", "meta", "form", "input", "button", "svg", "canvas"]);
+  const checkIfBlocked = url => adBlockerRegex.test(url);
+
+  const cleanAdElement = (el) => {
+    const url = new URL(el.src || el.href || "", location.href).href;
+    if (checkIfBlocked(url)) {
       el.remove();
-      el.src = el.srcset = el.href = "data:,";
+      el.src = "";
+      el.srcset = "";
+      el.href = "data:,";
     }
   };
-  const l = event => {
-    const url = new URL(event.detail.url || "", location.href).href;
-    if (a(url)) event.preventDefault();
-  };
-  const i = () => {
-    document.querySelectorAll(o.size ? Array.from(o).join(",") : "*").forEach(c);
-  };
-  const s = el => {
-    if (el.src) {
-      const url = new URL(el.src, location.href).href;
-      if (a(url)) el.src = el.srcset = el.href = "data:,";
-    }
-  };
-  const u = url => {
-    if (typeof url === "string" && a(new URL(url, location.href).href)) {
-      return "data:,";
-    }
-  };
-  const f = req => a(req.url) ? Promise.reject({ type: "filtering", url: req.url }) : fetch(req.url, req);
 
-  const p = () => {
-    if (MutationObserver) {
-      new MutationObserver(mutations => mutations.forEach(m => {
-        m.addedNodes.forEach(node => node.nodeType === 1 && s(node));
-      })).observe(document, { childList: true, subtree: true });
+  const blockAdRequests = (request) => {
+    const url = request.url;
+    if (checkIfBlocked(url)) {
+      return new Response('', { status: 204 });
     }
-    if (window.XMLHttpRequest) {
-      window.XMLHttpRequest.prototype.open = new Proxy(XMLHttpRequest.prototype.open, {
-        apply: (target, thisArg, args) => a(args[1]) ? undefined : target.apply(thisArg, args),
+    return fetch(request);
+  };
+
+  const detectNativeAds = (doc) => {
+    const nativeAds = doc.querySelectorAll("[data-ad, .ads, .ad-container, .ad-slot, .sponsored]");
+    nativeAds.forEach(ad => ad.remove());
+  };
+
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType === 1) cleanAdElement(node);
       });
-    }
-    if (window.fetch) {
-      window.fetch = new Proxy(fetch, {
-        apply: (target, thisArg, args) => f(args[0]),
-      });
-    }
-    if (EventTarget.prototype.addEventListener) {
-      EventTarget.prototype.addEventListener = new Proxy(EventTarget.prototype.addEventListener, {
-        apply: (target, thisArg, args) => {
-          if (["beforescriptexecute", "beforeload"].includes(args[0]) && a(args[1])) return;
-          return target.apply(thisArg, args);
-        },
-      });
-    }
-    document.addEventListener("DOMContentLoaded", i);
-    document.addEventListener("beforeload", l, true);
-    document.addEventListener("beforescriptexecute", l, true);
+    });
+  });
+
+  const blockPopups = () => {
     window.open = new Proxy(window.open, {
-      apply: (target, thisArg, args) => a(args[0]) ? null : target.apply(thisArg, args),
+      apply(target, thisArg, argumentsList) {
+        if (checkIfBlocked(argumentsList[0])) {
+          return null;
+        }
+        return target.apply(thisArg, argumentsList);
+      }
     });
   };
 
-  p();
+  const blockCrossOriginRequests = () => {
+    fetch = new Proxy(fetch, {
+      apply(target, thisArg, argumentsList) {
+        if (checkIfBlocked(argumentsList[0])) {
+          return Promise.reject({ type: "filtering", url: argumentsList[0] });
+        }
+        return target.apply(thisArg, argumentsList);
+      }
+    });
+  };
+
+  const blockIframeAds = () => {
+    document.querySelectorAll("iframe").forEach(iframe => {
+      const iframeSrc = iframe.src;
+      if (checkIfBlocked(iframeSrc)) {
+        iframe.remove();
+      }
+    });
+  };
+
+  const blockThirdPartyLibraries = () => {
+    const scriptTags = document.querySelectorAll("script[src]");
+    scriptTags.forEach(script => {
+      const scriptSrc = script.src;
+      if (checkIfBlocked(scriptSrc)) {
+        script.remove();
+      }
+    });
+  };
+
+  const blockStorageAPIAds = () => {
+    const storageMethods = [localStorage, sessionStorage, indexedDB];
+    storageMethods.forEach(storage => {
+      const originalSetItem = storage.setItem;
+      storage.setItem = function (key, value) {
+        if (key.includes("ad") || key.includes("banner") || key.includes("tracker")) {
+          return; 
+        }
+        return originalSetItem.apply(storage, arguments);
+      };
+    });
+  };
+
+  const blockWebRTCLeaks = () => {
+    Object.defineProperty(navigator, 'mediaDevices', {
+      get: function () {
+        return {
+          enumerateDevices: function () { return []; },
+          getUserMedia: function () { return Promise.reject("WebRTC is disabled"); }
+        };
+      }
+    });
+  };
+
+  const simulateUserBehavior = () => {
+    document.body.addEventListener("scroll", () => {}, { passive: true });
+    document.body.addEventListener("click", () => {}, { passive: true });
+  };
+
+  const interceptRequests = () => {
+    self.addEventListener('fetch', event => {
+      event.respondWith(blockAdRequests(event.request));
+    });
+  };
+
+  const setupAdBlocking = () => {
+    MutationObserver && observer.observe(document, { childList: true, subtree: true });
+    blockPopups();
+    blockCrossOriginRequests();
+    blockIframeAds();
+    blockThirdPartyLibraries();
+    blockStorageAPIAds();
+    blockWebRTCLeaks();
+    simulateUserBehavior();
+    interceptRequests();
+  };
+
+  const applyPrivacyBlocking = () => {
+
+    const userAgentString = navigator.userAgent;
+    const originalUserAgent = navigator.userAgent;
+    Object.defineProperty(navigator, "userAgent", {
+      get: function () { return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"; }
+    });
+
+    Object.defineProperty(screen, "width", { get: () => 1920 });
+    Object.defineProperty(screen, "height", { get: () => 1080 });
+    Object.defineProperty(screen, "pixelDepth", { get: () => 24 });
+
+    navigator.geolocation.getCurrentPosition = function () {};
+    navigator.geolocation.watchPosition = function () {};
+
+    document.querySelectorAll("img[src*='tracking'], img[src*='pixel']").forEach(el => el.remove());
+
+    document.cookie = "adblock=true; Secure; SameSite=Strict; path=/";
+
+    window.history.replaceState({}, document.title, location.origin + location.pathname);
+
+    document.querySelectorAll("script:not([src])").forEach(el => el.remove());
+
+    Object.defineProperty(navigator, 'plugins', {
+      get: function () { return [] }
+    });
+
+    document.cookie = "ad_sync=false; path=/";
+
+    document.querySelectorAll("[class*='social'], [id*='social'], [data-*='social']").forEach(el => el.remove());
+
+    Object.defineProperty(window, "orientation", { get: () => 0 });
+
+    const blockedAnalytics = ["google-analytics.com", "facebook.com", "analytics.twitter.com"];
+    blockedAnalytics.forEach(domain => {
+      document.querySelectorAll(`script[src*='${domain}']`).forEach(script => script.remove());
+    });
+
+    const originalWebSocket = WebSocket;
+    WebSocket = function (url, protocols) {
+      if (checkIfBlocked(url)) {
+        return null;
+      }
+      return new originalWebSocket(url, protocols);
+    };
+  };
+
+  window.addEventListener("load", () => {
+    setupAdBlocking();
+    applyPrivacyBlocking();
+    setInterval(() => {
+      document.querySelectorAll("iframe, script, img, video, object, embed, link, style, svg, canvas").forEach(el => cleanAdElement(el));
+    }, 500);
+    console.log("Privacy & Ad Blocking Activated!");
+  });
 })();
