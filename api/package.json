@@ -3,10 +3,10 @@
   "version": "2.5.9",
   "description": "Curse Static Web Proxy",
   "type": "module",
-  "main": "proxy.js",
+  "main": "window.js",
   "scripts": {
-    "start": "node proxy.js",
-    "dev": "nodemon proxy.js"
+    "start": "node window.js",
+    "dev": "nodemon window.js"
   },
   "dependencies": {
     "express": "^4.18.2",
