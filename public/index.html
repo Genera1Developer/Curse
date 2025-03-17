@@ -326,29 +326,46 @@
     })();
 
     searchForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const query = searchInput.value.trim();
-      if (query) {
-        let url;
-        if (isValidUrl(query)) {
-          url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
-          
-          if (useIframe) {
-            proxyFrame.src = `/api/window.js?q=${encodeURIComponent(url)}`; //window bc /proxy.js is detected by security😬
-            proxyContainer.classList.remove('hidden');
-          } else {
-            window.open(`/api/window.js?q=${encodeURIComponent(url)}`, '_blank');
-          }
-        } else {
-          if (useIframe) {
-            proxyFrame.src = `/api/window.js?q=https://searx.bndkt.io/search?q=${encodeURIComponent(query)}&from=os&clid=1836588`; //i was told to add a comment so it commits right
-            proxyContainer.classList.remove('hidden');
-          } else {
-            window.open(`/api/window.js?q=https://searx.bndkt.io/search?q=${encodeURIComponent(query)}&from=os&clid=1836588`, '_blank');
-          }
-        }
+  e.preventDefault();
+  const query = searchInput.value.trim();
+  
+  if (query) {
+    let url;
+    if (isValidUrl(query)) {
+      // If it's a valid URL, make sure it's formatted properly
+      url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
+      
+      // Open URL in iframe or new window
+      if (useIframe) {
+        proxyFrame.src = `/api/window.js?q=${encodeURIComponent(url)}`; // Window to avoid security block
+        proxyContainer.classList.remove('hidden');
+      } else {
+        window.open(`/api/window.js?q=${encodeURIComponent(url)}`, '_blank');
       }
-    });
+    } else {
+      
+      const searchEngines = [
+        'https://searx.bndkt.io/search?q=',
+        'https://search.ipv6s.net/search?q=',
+        'https://ooglester.com/search?q=',
+        'https://searxng.world/search?q='
+      ];
+      
+      // magic
+      const randomEngine = searchEngines[Math.floor(Math.random() * searchEngines.length)];
+      const searchUrl = `${randomEngine}${encodeURIComponent(query)}&from=os&clid=1836588`;
+      
+      
+      if (useIframe) {
+        proxyFrame.src = `/api/window.js?q=${encodeURIComponent(searchUrl)}`;
+        proxyContainer.classList.remove('hidden');
+      } else {
+        window.open(`/api/window.js?q=${encodeURIComponent(searchUrl)}`, '_blank');
+      }
+    }
+  }
+});
+
 
     fullscreenBtn.addEventListener('click', () => {
       proxyContainer.classList.add('fullscreen');
