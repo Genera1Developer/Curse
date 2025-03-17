@@ -120,7 +120,7 @@
             type="text" 
             id="searchInput" 
             name="q"
-            placeholder="Enter Search Query Or URL | EX: https://example.com"
+            placeholder="Enter Search Query Or URL | Now with better plaintext support"
             class="cyber-input w-full px-4 py-3 rounded-lg outline-none text-white placeholder-gray-400"
             required
           >
@@ -135,13 +135,13 @@
     </div>
 
     <div class="proxy-container hidden" id="proxyContainer">
+      <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>eruda.init();</script>
       <div class="proxy-controls">
         <button class="control-btn" id="fullscreenBtn">⤢</button>
         <button class="control-btn hidden" id="minimizeBtn">⤡</button>
       </div>
       <iframe id="proxyFrame"></iframe>
-      <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
     </div>
 
     <div class="max-w-2xl mx-auto cyber-card rounded-lg p-6">
