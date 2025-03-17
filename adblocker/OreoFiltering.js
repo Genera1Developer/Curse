@@ -36,7 +36,7 @@
   };
 
   const detectNativeAds = (doc) => {
-    const nativeAds = doc.querySelectorAll("[data-ad, .ads, .ad-container, .ad-slot, .sponsored]");
+    const nativeAds = doc.querySelectorAll("[data-ad], .ads, .ad-container, .ad-slot, .sponsored");
     nativeAds.forEach(ad => ad.remove());
   };
 
@@ -72,18 +72,15 @@
 
   const blockIframeAds = () => {
     document.querySelectorAll("iframe").forEach(iframe => {
-      const iframeSrc = iframe.src;
-      if (checkIfBlocked(iframeSrc)) {
+      if (checkIfBlocked(iframe.src)) {
         iframe.remove();
       }
     });
   };
 
   const blockThirdPartyLibraries = () => {
-    const scriptTags = document.querySelectorAll("script[src]");
-    scriptTags.forEach(script => {
-      const scriptSrc = script.src;
-      if (checkIfBlocked(scriptSrc)) {
+    document.querySelectorAll("script[src]").forEach(script => {
+      if (checkIfBlocked(script.src)) {
         script.remove();
       }
     });
@@ -95,7 +92,7 @@
       const originalSetItem = storage.setItem;
       storage.setItem = function (key, value) {
         if (key.includes("ad") || key.includes("banner") || key.includes("tracker")) {
-          return; 
+          return;
         }
         return originalSetItem.apply(storage, arguments);
       };
@@ -124,6 +121,90 @@
     });
   };
 
+  const blockFingerprintingAPIs = () => {
+    Object.defineProperty(navigator, 'deviceMemory', { get: () => 8 });
+    Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 4 });
+    Object.defineProperty(navigator, 'languages', { get: () => ["en-US", "en"] });
+    Object.defineProperty(navigator, 'platform', { get: () => "Win32" });
+  };
+
+  const blockNotificationPermissions = () => {
+    Notification.requestPermission = function() { return Promise.resolve("denied"); };
+  };
+
+  const blockAudioFingerprinting = () => {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (AudioContext) {
+      window.AudioContext = class extends AudioContext {
+        constructor() { super(); this.close(); }
+      };
+    }
+  };
+
+  const blockCanvasFingerprinting = () => {
+    HTMLCanvasElement.prototype.toDataURL = function () { return ""; };
+    HTMLCanvasElement.prototype.getContext = function () { return null; };
+  };
+
+  const blockBatteryAPI = () => {
+    navigator.getBattery = function() { return Promise.reject("Battery API disabled"); };
+  };
+
+  const blockWebSockets = () => {
+    window.WebSocket = class {
+      constructor() { throw new Error("WebSockets disabled"); }
+    };
+  };
+
+  const blockSessionReplayScripts = () => {
+    document.querySelectorAll("script[src*='session-replay'], script[src*='heatmap']").forEach(script => script.remove());
+  };
+
+  const blockFontFingerprinting = () => {
+    Object.defineProperty(document, 'fonts', { get: () => new Set() });
+  };
+
+  const blockMouseTracking = () => {
+    document.addEventListener("mousemove", (event) => { event.stopPropagation(); }, true);
+  };
+
+  const blockKeyboardTracking = () => {
+    document.addEventListener("keydown", (event) => { event.stopPropagation(); }, true);
+  };
+
+  const blockScreenSizeDetection = () => {
+    Object.defineProperty(screen, "width", { get: () => 1920 });
+    Object.defineProperty(screen, "height", { get: () => 1080 });
+  };
+
+  const blockGeolocationRequests = () => {
+    navigator.geolocation.getCurrentPosition = function () {};
+    navigator.geolocation.watchPosition = function () {};
+  };
+
+  const blockAnalyticsTrackers = () => {
+    const blockedAnalytics = ["google-analytics.com", "facebook.com", "analytics.twitter.com"];
+    blockedAnalytics.forEach(domain => {
+      document.querySelectorAll(`script[src*='${domain}']`).forEach(script => script.remove());
+    });
+  };
+
+  const disableHistoryTracking = () => {
+    window.history.replaceState({}, document.title, location.origin + location.pathname);
+  };
+
+  const disableAutoPlayVideos = () => {
+    document.querySelectorAll("video").forEach(video => video.autoplay = false);
+  };
+
+  const disableHyperlinkAuditing = () => {
+    document.querySelectorAll("a[ping]").forEach(link => link.removeAttribute("ping"));
+  };
+
+  const preventClipboardTracking = () => {
+    document.addEventListener("copy", (event) => event.clipboardData.setData("text/plain", ""), true);
+  };
+
   const setupAdBlocking = () => {
     MutationObserver && observer.observe(document, { childList: true, subtree: true });
     blockPopups();
@@ -134,61 +215,24 @@
     blockWebRTCLeaks();
     simulateUserBehavior();
     interceptRequests();
+    blockFingerprintingAPIs();
+    blockNotificationPermissions();
+    blockAudioFingerprinting();
+    blockCanvasFingerprinting();
+    blockBatteryAPI();
+    blockWebSockets();
+    blockSessionReplayScripts();
+    blockFontFingerprinting();
+    blockMouseTracking();
+    blockKeyboardTracking();
+    blockScreenSizeDetection();
+    blockGeolocationRequests();
+    blockAnalyticsTrackers();
+    disableHistoryTracking();
+    disableAutoPlayVideos();
+    disableHyperlinkAuditing();
+    preventClipboardTracking();
   };
 
-  const applyPrivacyBlocking = () => {
-
-    const userAgentString = navigator.userAgent;
-    const originalUserAgent = navigator.userAgent;
-    Object.defineProperty(navigator, "userAgent", {
-      get: function () { return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"; }
-    });
-
-    Object.defineProperty(screen, "width", { get: () => 1920 });
-    Object.defineProperty(screen, "height", { get: () => 1080 });
-    Object.defineProperty(screen, "pixelDepth", { get: () => 24 });
-
-    navigator.geolocation.getCurrentPosition = function () {};
-    navigator.geolocation.watchPosition = function () {};
-
-    document.querySelectorAll("img[src*='tracking'], img[src*='pixel']").forEach(el => el.remove());
-
-    document.cookie = "adblock=true; Secure; SameSite=Strict; path=/";
-
-    window.history.replaceState({}, document.title, location.origin + location.pathname);
-
-    document.querySelectorAll("script:not([src])").forEach(el => el.remove());
-
-    Object.defineProperty(navigator, 'plugins', {
-      get: function () { return [] }
-    });
-
-    document.cookie = "ad_sync=false; path=/";
-
-    document.querySelectorAll("[class*='social'], [id*='social'], [data-*='social']").forEach(el => el.remove());
-
-    Object.defineProperty(window, "orientation", { get: () => 0 });
-
-    const blockedAnalytics = ["google-analytics.com", "facebook.com", "analytics.twitter.com"];
-    blockedAnalytics.forEach(domain => {
-      document.querySelectorAll(`script[src*='${domain}']`).forEach(script => script.remove());
-    });
-
-    const originalWebSocket = WebSocket;
-    WebSocket = function (url, protocols) {
-      if (checkIfBlocked(url)) {
-        return null;
-      }
-      return new originalWebSocket(url, protocols);
-    };
-  };
-
-  window.addEventListener("load", () => {
-    setupAdBlocking();
-    applyPrivacyBlocking();
-    setInterval(() => {
-      document.querySelectorAll("iframe, script, img, video, object, embed, link, style, svg, canvas").forEach(el => cleanAdElement(el));
-    }, 500);
-    console.log("Privacy & Ad Blocking Activated!");
-  });
+  window.addEventListener("load", setupAdBlocking);
 })();
