@@ -41,7 +41,7 @@
       overflow: auto;
       z-index: 1000;
     }
-  
+
     #proxyFrame {
       width: 100%;
       height: 100%;
@@ -110,11 +110,22 @@
       <script src="https://unpkg.com/typewriter-effect@latest/dist/core.js"></script>
       <script>
         const typewriter = new Typewriter("#typewriter", { loop: false, delay: 50 });
-        typewriter.typeString("12ft.io copy fr").typeString("oreo main dev frfr").typeString("I'm so sigma").typeString("I never said this quote, please take it off your site -glitch 2097").start();
+        typewriter
+          .typeString("12ft.io copy fr")
+          .pauseFor(1000)
+          .deleteAll()
+          .typeString("oreo main dev frfr")
+          .pauseFor(1000)
+          .deleteAll()
+          .typeString("I'm so sigma")
+          .pauseFor(1000)
+          .deleteAll()
+          .typeString("I never said this quote, please take it off your site -glitch 2097")
+          .start();
       </script>
     </header>
 
-    <div class="max-w-2xl mx-auto cyber-card rounded-lg p-6 mb-8">
+    <div class="max-w-2xl mx-auto px-4 py-8">
       <form id="searchForm" class="space-y-4">
         <div class="relative">
           <input 
@@ -145,10 +156,15 @@
       <iframe id="proxyFrame"></iframe>
     </div>
 
-    <div class="max-w-2xl mx-auto cyber-card rounded-lg p-6">
+    <div class="max-w-2xl mx-auto cyber-card rounded-lg p-6 mb-8">
       <h2 class="text-2xl font-semibold mb-4 text-white">System Controls</h2>
       <div class="space-y-4">
-        <!-- Controls (e.g., Ad Block, Brightness) -->
+        <button id="fullscreenBtn" class="cyber-button w-full">Toggle Fullscreen</button>
+        <button id="adBlockToggle" class="cyber-button w-full">Block Ads</button>
+        <button id="qualityToggle" class="cyber-button w-full">Toggle Quality</button>
+        <button id="particleBlurToggle" class="cyber-button w-full">Toggle Particle Blur</button>
+        <input id="brightnessSlider" type="range" min="50" max="150" value="100" class="w-full">
+        <label for="brightnessSlider" class="text-white">Adjust Brightness</label>
       </div>
     </div>
   </div>
@@ -163,55 +179,34 @@
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
     const adBlockToggle = document.getElementById('adBlockToggle');
-    const adBlockMethod = document.getElementById('adBlockMethod');
     const brightnessSlider = document.getElementById('brightnessSlider');
     const fullscreenBtn = document.getElementById('fullscreenBtn');
     const minimizeBtn = document.getElementById('minimizeBtn');
-    const iframeBtn = document.getElementById('iframeBtn');
-    const newWindowBtn = document.getElementById('newWindowBtn');
     const qualityToggle = document.getElementById('qualityToggle');
-    const textSizeSlider = document.getElementById('textSizeSlider');
     const particleBlurToggle = document.getElementById('particleBlurToggle');
 
-    let isAdBlockEnabled = false;
-    let currentAdBlockMethod = 'curse';
     let useIframe = true;
+    let isAdBlockEnabled = false;
 
     brightnessSlider.addEventListener('input', (e) => {
       const value = e.target.value;
       document.body.style.filter = `brightness(${value}%)`;
     });
 
-    iframeBtn.addEventListener('click', () => {
-      iframeBtn.classList.add('active');
-      newWindowBtn.classList.remove('active');
-      useIframe = true;
+    fullscreenBtn.addEventListener('click', () => {
+      proxyContainer.classList.toggle('fullscreen');
+      minimizeBtn.classList.toggle('hidden');
     });
 
-    newWindowBtn.addEventListener('click', () => {
-      newWindowBtn.classList.add('active');
-      iframeBtn.classList.remove('active');
-      useIframe = false;
+    minimizeBtn.addEventListener('click', () => {
+      proxyContainer.classList.remove('fullscreen');
+      minimizeBtn.classList.add('hidden');
     });
 
     qualityToggle.addEventListener('click', () => {
       qualityToggle.classList.toggle('toggle-on');
       qualityToggle.classList.toggle('toggle-off');
       document.body.classList.toggle('quality-reduced');
-      if (qualityToggle.classList.contains('toggle-on')) {
-        document.querySelectorAll('.cyber-blob').forEach(blob => {
-          blob.style.animationDuration = '3s';
-        });
-      } else {
-        document.querySelectorAll('.cyber-blob').forEach(blob => {
-          blob.style.animationDuration = '1.5s';
-        });
-      }
-    });
-
-    textSizeSlider.addEventListener('input', (e) => {
-      const size = e.target.value;
-      document.body.style.fontSize = `${size}px`;
     });
 
     particleBlurToggle.addEventListener('click', () => {
