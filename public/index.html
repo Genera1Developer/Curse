@@ -158,19 +158,74 @@
       <iframe id="proxyFrame"></iframe>
     </div>
 
-    <div class="max-w-2xl mx-auto cyber-card rounded-lg p-6 mb-8">
+    <div class="max-w-2xl mx-auto cyber-card rounded-lg p-6">
       <h2 class="text-2xl font-semibold mb-4 text-white">System Controls</h2>
       <div class="space-y-4">
-        <button id="fullscreenBtn" class="cyber-button w-full">Toggle Fullscreen</button>
-        <button id="adBlockToggle" class="cyber-button w-full">Block Ads</button>
-        <button id="qualityToggle" class="cyber-button w-full">Toggle Quality</button>
-        <button id="particleBlurToggle" class="cyber-button w-full">Toggle Particle Blur</button>
-        <input id="brightnessSlider" type="range" min="50" max="150" value="100" class="w-full">
-        <label for="brightnessSlider" class="text-white">Adjust Brightness</label>
-      </div>
-    </div>
-  </div>
-
+        <div class="flex items-center justify-between">
+          <span class="text-gray-300">Ad Block</span>
+          <div id="adBlockToggle" class="toggle toggle-off">
+            <div class="circle"></div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-300">Ad Block Method</span>
+          <select id="adBlockMethod" class="cyber-input px-4 py-2 rounded-lg">
+            <option value="curse">Curse Block</option>
+            <option value="ublock">uBlock</option>
+            <option value="oreo">OreoFiltering</option>
+          </select>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-300">Brightness</span>
+          <div class="flex items-center flex-1 max-w-xs ml-4">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+            <input
+              type="range"
+              id="brightnessSlider"
+              min="10"
+              max="100"
+              value="100"
+              class="w-full mx-2 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+            >
+            <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-300">Tab Behavior</span>
+          <div class="button-group flex space-x-2">
+            <button id="iframeBtn" class="cyber-button px-4 py-1 rounded-lg text-white active">Iframe</button>
+            <button id="newWindowBtn" class="cyber-button px-4 py-1 rounded-lg text-white">New Window</button>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-300">Quality Mode</span>
+          <div id="qualityToggle" class="toggle toggle-off">
+            <div class="circle"></div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-300">Text Size</span>
+          <div class="flex items-center flex-1 max-w-xs ml-4">
+            <span class="text-sm">a</span>
+            <input
+              type="range"
+              id="textSizeSlider"
+              min="12"
+              max="24"
+              value="16"
+              class="w-full mx-2 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+            >
+            <span class="text-xl">A</span>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-gray-300">Particle Blur</span>
+          <div id="particleBlurToggle" class="toggle toggle-off">
+            <div class="circle"></div>
   <script>
     const html = document.documentElement;
     const themeToggle = document.getElementById('themeToggle');
