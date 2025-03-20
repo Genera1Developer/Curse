@@ -62,14 +62,28 @@ app.get('/api/window.js', async (req, res) => {
   try {
     // hehe, only skids use applewebkit 
     const response = await axios.get(q, {
-      responseType: 'arraybuffer',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-        'Referer': q,
-        'Accept': req.headers['accept'] || '*/*',
-        'Accept-Language': req.headers['accept-language'] || 'en-US,en;q=0.9',
-      }
-    });
+  responseType: 'arraybuffer',
+  headers: {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+    'Referer': new URL(q).origin,
+    'Accept': 'text/html,application/xhtml+xml,application/xml,application/javascript,text/javascript,text/css,text/plain,image/jpeg,image/png,image/gif,image/webp,image/svg+xml,image/avif,image/apng,font/woff,font/woff2,font/ttf,font/otf,application/json,*/*;q=0.8', //holy sigma that took a long time to type with one hand
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+    'DNT': '1',
+    'Connection': 'keep-alive',
+    'Upgrade-Insecure-Requests': '1',
+    'Sec-Fetch-Dest': 'document',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-User': '?1'
+  },
+  maxRedirects: 5,
+  timeout: 15000,
+  decompress: true,
+  validateStatus: status => status < 400 || status === 404
+});
 
     let contentType = response.headers['content-type'] || '';
     res.setHeader('Content-Type', contentType);
