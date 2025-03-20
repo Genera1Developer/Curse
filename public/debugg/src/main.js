@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => { // i piss myself now
+document.addEventListener("DOMContentLoaded", () => { // i piss myself now.
   const createChatForm = document.getElementById("create-chat-form");
   const chatList = document.getElementById("chat-list");
 
