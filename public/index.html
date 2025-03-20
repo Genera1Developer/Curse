@@ -79,14 +79,17 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
       </svg>
     </button>
-    <button 
-      id="themeSelector" 
-      class="fixed top-16 right-4 cyber-button p-2 rounded-full text-white"
-      aria-label="Select theme"
-    >
-      🎨
-    </button>
-
+<button 
+  id="themeSelector" 
+  class="fixed top-16 right-4 cyber-button p-2 rounded-full text-white"
+  aria-label="Select theme"
+>
+  <img 
+    src="./assets/185053_paint_brush_icon.png" 
+    alt="Theme Selector" 
+    class="w-6 h-6"
+  />
+</button>
     <div id="themeDropdown" class="theme-dropdown">
       <div class="theme-item" data-theme="default">
         <div class="theme-preview" style="background: linear-gradient(135deg, #1e3a8a, #1e40af);"></div>
@@ -114,15 +117,18 @@
           .typeString("12ft.io copy fr")
           .pauseFor(1000)
           .deleteAll()
-          .typeString("oreo main dev frfr")
+          .typeString('const typewriter = new Typewriter("#typewriter", { loop: false, delay: 50 });')
           .pauseFor(1000)
           .deleteAll()
           .typeString("Oreo deadass broke half of the site to add like 2 thinngs")
           .pauseFor(1000)
           .deleteAll()
-          .typeString("I never said this quote, please take it off your site -glitch 2097" "no" -Glitch)
+          .typeString("I never said this quote, please take it off your site -glitch 2097")
           .deleteAll()
           .typeString("I (Glitch) broke my collar bone in two pieces, and here I am fixing Oreo's silly lil mistakes [he broke all the css tehe]")
+          .deleteAll()
+          .typeString('LIER, I PURLY BROKE ALL THE CSS, I DID NOT "TEHE"')
+          .deleteAll()
           .start();
       </script>
     </header>
