@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatContent = document.getElementById("chat-content");
   const chatImage = document.getElementById("chat-image");
 
-  
   const getUsername = () => {
     let username = localStorage.getItem("username");
     if (!username) {
@@ -14,7 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return username;
   };
 
-  
   const loadPosts = async () => {
     try {
       const res = await fetch("/api/posts");
@@ -26,22 +24,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  
   const createChat = (post) => {
     const chatElement = document.createElement("div");
     chatElement.classList.add("chat");
 
-    
     const usernameTag = document.createElement("p");
     usernameTag.innerHTML = post.username + (post.isOp ? " <span class='op-tag'>(OP)</span>" : "") + ":";
     chatElement.appendChild(usernameTag);
 
-    
     const chatContent = document.createElement("p");
     chatContent.innerHTML = post.content;
     chatElement.appendChild(chatContent);
 
-  
     if (post.imageUrl) {
       const imageElement = document.createElement("img");
       imageElement.src = post.imageUrl;
@@ -49,12 +43,10 @@ document.addEventListener("DOMContentLoaded", () => {
       chatElement.appendChild(imageElement);
     }
 
-    // fuck you javascript
     const timestamp = document.createElement("span");
     timestamp.textContent = `Posted on: ${post.timestamp}`;
     chatElement.appendChild(timestamp);
 
-    // fuck you poster
     const likeButton = document.createElement("button");
     likeButton.textContent = `👍 ${post.likes || 0}`;
     likeButton.classList.add("like-button");
@@ -68,19 +60,17 @@ document.addEventListener("DOMContentLoaded", () => {
     chatElement.appendChild(likeButton);
     chatElement.appendChild(dislikeButton);
 
-    // this comment sucks
     const commentsSection = document.createElement("div");
     commentsSection.classList.add("comments");
+    commentsSection.style.display = "none";
     post.comments.forEach(comment => appendComment(comment, commentsSection, post.username));
     
-    // go the fuck away
     const seeCommentsButton = document.createElement("button");
     seeCommentsButton.textContent = "See Comments";
     seeCommentsButton.addEventListener("click", () => toggleComments(commentsSection));
     chatElement.appendChild(seeCommentsButton);
     chatElement.appendChild(commentsSection);
 
-    // no one is sending you ch**d p**n lil bro
     const replyButton = document.createElement("button");
     replyButton.textContent = "Reply";
     replyButton.addEventListener("click", () => toggleReplyBox(replyForm));
@@ -99,8 +89,12 @@ document.addEventListener("DOMContentLoaded", () => {
     replyForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const username = getUsername();
-      await postComment(post.id, replyInput.value, commentsSection, username, post.username);
-      replyInput.value = "";
+      if (replyInput.value.trim()) {
+        await postComment(post.id, replyInput.value.trim(), commentsSection, username, post.username);
+        replyInput.value = "";
+        replyForm.style.display = "none";
+        commentsSection.style.display = "block";
+      }
     });
 
     chatElement.appendChild(replyButton);
@@ -109,12 +103,10 @@ document.addEventListener("DOMContentLoaded", () => {
     chatList.appendChild(chatElement);
   };
 
-  
   const appendComment = (comment, commentsSection, postOwner) => {
     const commentElement = document.createElement("div");
     commentElement.classList.add("comment");
 
-    // YOU ARE NOT SPECIALLLLLL
     const commentUsername = document.createElement("p");
     commentUsername.innerHTML = comment.username + (comment.username === postOwner ? " <span class='op-tag'>(OP)</span>" : "") + ":";
     
@@ -126,71 +118,88 @@ document.addEventListener("DOMContentLoaded", () => {
     commentsSection.appendChild(commentElement);
   };
 
-  
   const toggleComments = (commentsSection) => {
     commentsSection.style.display = commentsSection.style.display === "none" ? "block" : "none";
   };
 
-  
   const toggleReplyBox = (replyForm) => {
     replyForm.style.display = replyForm.style.display === "none" ? "block" : "none";
   };
 
-  
   const postComment = async (postId, content, commentsSection, username, postOwner) => {
-    const res = await fetch(`/api/posts/${postId}/comments`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content, username }),
-    });
+    try {
+      const res = await fetch(`/api/posts/${postId}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, username }),
+      });
 
-    const comment = await res.json();
-    appendComment(comment, commentsSection, postOwner);
+      if (res.ok) {
+        const comment = await res.json();
+        appendComment(comment, commentsSection, postOwner);
+      } else {
+        console.error("Failed to post comment:", await res.text());
+      }
+    } catch (error) {
+      console.error("Error posting comment:", error);
+    }
   };
 
-  // i like this
   const handleLike = async (postId, likeButton) => {
-    const res = await fetch(`/api/posts/${postId}/like`, { method: "POST" });
-    if (res.ok) {
-      const data = await res.json();
-      likeButton.textContent = `👍 ${data.likes}`;
+    try {
+      const res = await fetch(`/api/posts/${postId}/like`, { method: "POST" });
+      if (res.ok) {
+        const data = await res.json();
+        likeButton.textContent = `👍 ${data.likes}`;
+      }
+    } catch (error) {
+      console.error("Error liking post:", error);
     }
   };
 
-  
   const handleDislike = async (postId, dislikeButton) => {
-    const res = await fetch(`/api/posts/${postId}/dislike`, { method: "POST" });
-    if (res.ok) {
-      const data = await res.json();
-      dislikeButton.textContent = `👎 ${data.dislikes}`;
+    try {
+      const res = await fetch(`/api/posts/${postId}/dislike`, { method: "POST" });
+      if (res.ok) {
+        const data = await res.json();
+        dislikeButton.textContent = `👎 ${data.dislikes}`;
+      }
+    } catch (error) {
+      console.error("Error disliking post:", error);
     }
   };
 
-  
   createChatForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    const content = chatContent.value.trim();
+    if (!content) return;
+
     const username = getUsername();
     const formData = new FormData();
-    formData.append("content", chatContent.value.trim());
+    formData.append("content", content);
     formData.append("username", username);
 
     if (chatImage.files.length > 0) {
       formData.append("image", chatImage.files[0]);
     }
 
-    const res = await fetch("/api/posts", {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const res = await fetch("/api/posts", {
+        method: "POST",
+        body: formData,
+      });
 
-    if (res.ok) {
-      const post = await res.json();
-      createChat(post);
-      chatContent.value = "";
-      chatImage.value = "";
-    } else {
-      console.error("Failed to post chat");
+      if (res.ok) {
+        const post = await res.json();
+        createChat(post);
+        chatContent.value = "";
+        chatImage.value = "";
+      } else {
+        console.error("Failed to post chat:", await res.text());
+      }
+    } catch (error) {
+      console.error("Error creating post:", error);
     }
   });
 
