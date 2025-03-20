@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gwantum</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="logo">
+    <a href="https://discord.gg/S7YjkNHQPg">
+        <img src="/logo.svg" alt="Auto Logo" width="50" height="50">
+    </a>
+</header>
+
+<main id="app">
+    <h1 class="title">What Would You Like To Say Today?</h1>
+
+    <section id="forum">
+        <h2>Auto Deletes!</h2>
+        <div class="chat-container">
+            <form id="create-chat-form">
+                <textarea id="chat-content" placeholder="Write your post here..." required></textarea><br />
+                <button type="submit">Post Chat</button>
+            </form>
+        </div>
+        <div id="chat-list"></div>
+    </section>
+</main>
+
+<footer class="technologies">
+    <p>Functions made in pure, painful</p>
+    <img src="/javascript.svg" alt="JavaScript Custom Logo SVG Made By Glitch">
+</footer>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

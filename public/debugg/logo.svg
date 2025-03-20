@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 120 120">
+    <!-- Outer Circle (AI Circuit) -->
+    <circle cx="60" cy="60" r="50" fill="none" stroke="#00BFFF" stroke-width="6" stroke-dasharray="314" stroke-dashoffset="314">
+        <animate attributeName="stroke-dashoffset" values="314;0;314" dur="4s" keyTimes="0;0.8;1" repeatCount="indefinite" />
+        <animate attributeName="stroke" values="#00BFFF;#00FF00;#00BFFF" dur="6s" repeatCount="indefinite" />
+    </circle>
+
+    <!-- Inner Circle (Core/AI Center) -->
+    <circle cx="60" cy="60" r="20" fill="#00BFFF">
+        <animate attributeName="r" values="20;25;20" dur="2s" keyTimes="0;0.5;1" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="1;0.8;1" dur="2.5s" keyTimes="0;0.5;1" repeatCount="indefinite" />
+    </circle>
+
+    <!-- Pulsing Inner Circle -->
+    <circle cx="60" cy="60" r="12" fill="white">
+        <animate attributeName="r" values="12;18;12" dur="2.5s" keyTimes="0;0.5;1" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.8;0.3;0.8" dur="3s" keyTimes="0;0.5;1" repeatCount="indefinite" />
+    </circle>
+</svg>
