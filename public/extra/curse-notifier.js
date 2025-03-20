@@ -1,3 +1,4 @@
+document.addEventListener("DOMContentLoaded", function() {
 (function () {
     const officialLinks = [
         "rawr-uwu.vercel.app",
@@ -67,3 +68,5 @@
 
     setTimeout(closeNotification, 5000);
 })();
+    });
+
