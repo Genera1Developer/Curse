@@ -1,7 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   const createChatForm = document.getElementById("create-chat-form");
   const chatList = document.getElementById("chat-list");
+  const chatContent = document.getElementById("chat-content");
+  const chatImage = document.getElementById("chat-image");
 
+  
   const getUsername = () => {
     let username = localStorage.getItem("username");
     if (!username) {
@@ -11,129 +14,129 @@ document.addEventListener("DOMContentLoaded", () => {
     return username;
   };
 
+  
   const loadPosts = async () => {
-    const res = await fetch("/api/posts");
-    const posts = await res.json();
-    posts.forEach(createChat);
+    try {
+      const res = await fetch("/api/posts");
+      const posts = await res.json();
+      chatList.innerHTML = ""; 
+      posts.forEach(post => createChat(post));
+    } catch (error) {
+      console.error("Failed to load posts:", error);
+    }
   };
 
+  
   const createChat = (post) => {
     const chatElement = document.createElement("div");
     chatElement.classList.add("chat");
 
+    
+    const usernameTag = document.createElement("p");
+    usernameTag.innerHTML = post.username + (post.isOp ? " <span class='op-tag'>(OP)</span>" : "") + ":";
+    chatElement.appendChild(usernameTag);
+
+    
     const chatContent = document.createElement("p");
-    chatContent.innerHTML = `<strong>${post.username}:</strong><br>${post.content}`;
+    chatContent.innerHTML = post.content;
     chatElement.appendChild(chatContent);
 
+  
     if (post.imageUrl) {
-      const image = document.createElement("img");
-      image.src = post.imageUrl;
-      image.alt = "Posted Image";
-      image.classList.add("chat-image");
-      chatElement.appendChild(image);
+      const imageElement = document.createElement("img");
+      imageElement.src = post.imageUrl;
+      imageElement.alt = "User uploaded image";
+      chatElement.appendChild(imageElement);
     }
 
+    // fuck you javascript
     const timestamp = document.createElement("span");
     timestamp.textContent = `Posted on: ${post.timestamp}`;
     chatElement.appendChild(timestamp);
 
-    
+    // fuck you poster
     const likeButton = document.createElement("button");
     likeButton.textContent = `👍 ${post.likes || 0}`;
-    likeButton.addEventListener("click", () => handleLikeDislike(post.id, "like", likeButton, dislikeButton));
+    likeButton.classList.add("like-button");
+    likeButton.addEventListener("click", async () => handleLike(post.id, likeButton));
 
     const dislikeButton = document.createElement("button");
     dislikeButton.textContent = `👎 ${post.dislikes || 0}`;
-    dislikeButton.addEventListener("click", () => handleLikeDislike(post.id, "dislike", likeButton, dislikeButton));
+    dislikeButton.classList.add("dislike-button");
+    dislikeButton.addEventListener("click", async () => handleDislike(post.id, dislikeButton));
 
     chatElement.appendChild(likeButton);
     chatElement.appendChild(dislikeButton);
 
+    // this comment sucks
+    const commentsSection = document.createElement("div");
+    commentsSection.classList.add("comments");
+    post.comments.forEach(comment => appendComment(comment, commentsSection, post.username));
+    
+    // go the fuck away
     const seeCommentsButton = document.createElement("button");
     seeCommentsButton.textContent = "See Comments";
     seeCommentsButton.addEventListener("click", () => toggleComments(commentsSection));
-
-    const commentsSection = document.createElement("div");
-    commentsSection.classList.add("comments");
-    commentsSection.style.display = "none";
-
-    post.comments.forEach((comment) => {
-      commentsSection.appendChild(createCommentElement(comment, post.username));
-    });
-
-    const replyButtonContainer = document.createElement("div");
-    const replyButton = document.createElement("button");
-    replyButton.textContent = "Reply?";
-    replyButton.classList.add("reply-button");
-    replyButton.addEventListener("click", () => toggleReplyBox(replyButtonContainer));
-
-    const commentForm = document.createElement("form");
-    commentForm.style.display = "none";
-    const commentInput = document.createElement("textarea");
-    commentInput.placeholder = "Write your comment here...";
-    commentInput.required = true;
-
-    const commentButton = document.createElement("button");
-    commentButton.textContent = "Post Comment";
-    commentButton.disabled = true;
-
-    commentForm.appendChild(commentInput);
-    commentForm.appendChild(commentButton);
-
-    commentForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const username = getUsername();
-      await postComment(post.id, commentInput.value, commentsSection, username, post.username);
-      commentInput.value = "";
-      commentButton.disabled = true;
-    });
-
-    commentInput.addEventListener("input", () => {
-      commentButton.disabled = !commentInput.value.trim();
-    });
-
     chatElement.appendChild(seeCommentsButton);
     chatElement.appendChild(commentsSection);
-    replyButtonContainer.appendChild(replyButton);
-    replyButtonContainer.appendChild(commentForm);
-    chatElement.appendChild(replyButtonContainer);
+
+    // no one is sending you ch**d p**n lil bro
+    const replyButton = document.createElement("button");
+    replyButton.textContent = "Reply";
+    replyButton.addEventListener("click", () => toggleReplyBox(replyForm));
+
+    const replyForm = document.createElement("form");
+    replyForm.style.display = "none";
+
+    const replyInput = document.createElement("textarea");
+    replyInput.placeholder = "Write your reply...";
+    replyForm.appendChild(replyInput);
+
+    const replySubmit = document.createElement("button");
+    replySubmit.textContent = "Post Reply";
+    replyForm.appendChild(replySubmit);
+
+    replyForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = getUsername();
+      await postComment(post.id, replyInput.value, commentsSection, username, post.username);
+      replyInput.value = "";
+    });
+
+    chatElement.appendChild(replyButton);
+    chatElement.appendChild(replyForm);
+    
     chatList.appendChild(chatElement);
   };
 
-  const createCommentElement = (comment, postOwner) => {
+  
+  const appendComment = (comment, commentsSection, postOwner) => {
     const commentElement = document.createElement("div");
     commentElement.classList.add("comment");
 
-    let opTag = comment.username === postOwner ? " <span class='op-tag'>{OP}</span>" : "";
+    // YOU ARE NOT SPECIALLLLLL
+    const commentUsername = document.createElement("p");
+    commentUsername.innerHTML = comment.username + (comment.username === postOwner ? " <span class='op-tag'>(OP)</span>" : "") + ":";
+    
     const commentContent = document.createElement("p");
-    commentContent.innerHTML = `<strong>${comment.username}${opTag}:</strong><br>${comment.content}`;
+    commentContent.textContent = comment.content;
+    
+    commentElement.appendChild(commentUsername);
     commentElement.appendChild(commentContent);
-
-    const commentTimestamp = document.createElement("span");
-    commentTimestamp.textContent = `Posted on: ${comment.timestamp}`;
-    commentElement.appendChild(commentTimestamp);
-
-    return commentElement;
+    commentsSection.appendChild(commentElement);
   };
 
+  
   const toggleComments = (commentsSection) => {
     commentsSection.style.display = commentsSection.style.display === "none" ? "block" : "none";
   };
 
-  const toggleReplyBox = (container) => {
-    const form = container.querySelector("form");
-    form.style.display = form.style.display === "none" ? "block" : "none";
+  
+  const toggleReplyBox = (replyForm) => {
+    replyForm.style.display = replyForm.style.display === "none" ? "block" : "none";
   };
 
-  const handleLikeDislike = async (postId, type, likeButton, dislikeButton) => {
-    const res = await fetch(`/api/posts/${postId}/${type}`, { method: "POST" });
-    if (res.ok) {
-      const updatedPost = await res.json();
-      likeButton.textContent = `👍 ${updatedPost.likes}`;
-      dislikeButton.textContent = `👎 ${updatedPost.dislikes}`;
-    }
-  };
-
+  
   const postComment = async (postId, content, commentsSection, username, postOwner) => {
     const res = await fetch(`/api/posts/${postId}/comments`, {
       method: "POST",
@@ -141,45 +144,53 @@ document.addEventListener("DOMContentLoaded", () => {
       body: JSON.stringify({ content, username }),
     });
 
+    const comment = await res.json();
+    appendComment(comment, commentsSection, postOwner);
+  };
+
+  // i like this
+  const handleLike = async (postId, likeButton) => {
+    const res = await fetch(`/api/posts/${postId}/like`, { method: "POST" });
     if (res.ok) {
-      const comment = await res.json();
-      commentsSection.appendChild(createCommentElement(comment, postOwner));
+      const data = await res.json();
+      likeButton.textContent = `👍 ${data.likes}`;
     }
   };
 
+  
+  const handleDislike = async (postId, dislikeButton) => {
+    const res = await fetch(`/api/posts/${postId}/dislike`, { method: "POST" });
+    if (res.ok) {
+      const data = await res.json();
+      dislikeButton.textContent = `👎 ${data.dislikes}`;
+    }
+  };
+
+  
   createChatForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const chatContent = document.getElementById("chat-content").value.trim();
-    const imageInput = document.getElementById("chat-image");
 
-    if (chatContent || (imageInput && imageInput.files.length > 0)) {
-      const username = getUsername();
-      const formData = new FormData();
-      formData.append("content", chatContent);
-      formData.append("username", username);
-      if (imageInput.files.length > 0) {
-        formData.append("image", imageInput.files[0]);
-      }
+    const username = getUsername();
+    const formData = new FormData();
+    formData.append("content", chatContent.value.trim());
+    formData.append("username", username);
 
-      try {
-        const res = await fetch("/api/posts", {
-          method: "POST",
-          body: formData,
-        });
+    if (chatImage.files.length > 0) {
+      formData.append("image", chatImage.files[0]);
+    }
 
-        if (!res.ok) {
-          throw new Error("Failed to post chat");
-        }
+    const res = await fetch("/api/posts", {
+      method: "POST",
+      body: formData,
+    });
 
-        const post = await res.json();
-        createChat(post);
-        document.getElementById("chat-content").value = "";
-        imageInput.value = "";
-      } catch (error) {
-        console.error("Error:", error);
-      }
+    if (res.ok) {
+      const post = await res.json();
+      createChat(post);
+      chatContent.value = "";
+      chatImage.value = "";
     } else {
-      alert("bastard.");
+      console.error("Failed to post chat");
     }
   });
 
