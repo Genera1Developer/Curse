@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const loadPosts = async () => {
     try {
-      const res = await fetch("/api/posts");
+      const res = await fetch("/debugg/posts");
       const posts = await res.json();
       chatList.innerHTML = ""; 
       posts.forEach(post => createChat(post));
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const username = getUsername();
       if (replyInput.value.trim()) {
         try {
-          const res = await fetch(`/api/posts/${post.id}/comments`, {
+          const res = await fetch(`/debugg/posts/${post.id}/comments`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ content: replyInput.value.trim(), username }),
@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const handleLike = async (postId, likeButton) => {
     try {
-      const res = await fetch(`/api/posts/${postId}/like`, { method: "POST" });
+      const res = await fetch(`/debugg/posts/${postId}/like`, { method: "POST" });
       if (res.ok) {
         const data = await res.json();
         likeButton.textContent = `👍 ${data.likes}`;
@@ -149,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const handleDislike = async (postId, dislikeButton) => {
     try {
-      const res = await fetch(`/api/posts/${postId}/dislike`, { method: "POST" });
+      const res = await fetch(`/debugg/posts/${postId}/dislike`, { method: "POST" });
       if (res.ok) {
         const data = await res.json();
         dislikeButton.textContent = `👎 ${data.dislikes}`;
