@@ -175,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const res = await fetch("/api/posts", {
+      const res = await fetch("/debugg/posts", {
         method: "POST",
         body: formData,
       });
