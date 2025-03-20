@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gwantum</title>
+    <title>Gwantum | Curse</title>
     <link rel="stylesheet" href="/debugg/style.css">
 </head>
 <body>
@@ -15,13 +15,14 @@
 </header>
 
 <main id="app">
-    <h1 class="title">What Would You Like To Say Today?</h1>
+    <h1 class="title">What bullshit are you gonna put on the web today?</h1>
 
     <section id="forum">
         <h2>Auto Deletes!</h2>
         <div class="chat-container">
-            <form id="create-chat-form">
+            <form id="create-chat-form" enctype="multipart/form-data">
                 <textarea id="chat-content" placeholder="Write your post here..." required></textarea><br />
+                <input type="file" id="chat-image" accept="image/*"><br />
                 <button type="submit">Post Chat</button>
             </form>
         </div>
@@ -34,6 +35,6 @@
     <img src="/debugg/javascript.svg" alt="JavaScript Custom Logo SVG Made By Glitch">
 </footer>
 
-<script type="module" src="/debugg/src/main.js"></script> <!-- doesnt do shit -->
+<script type="module" src="/debugg/src/main.js"></script>
 </body>
 </html>
