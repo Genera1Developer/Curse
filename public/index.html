@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
+
   <meta charset="UTF-8">
   <meta http-equiv="X-Frame-Options" content="DENY">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,11 +10,12 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
   <link rel="stylesheet" href="/visuals/dropdown.css">
   <link rel="stylesheet" href="/theme/particles.css">
+  <script src="public/extra/curse-notifier.js"></script>
   <style>
     .button-group button.active {
       background: var(--primary-glow);
       color: white;
-    }
+    
     .particles-blur {
       filter: blur(3px);
     }
@@ -59,7 +61,7 @@
       window.top.location = window.location.href;
     }
   </script>
-  <script src="public/extra/curse-notifier.js"></script>
+  
   <canvas id="canvas"></canvas>
   <div class="cyber-bg">
     <div class="cyber-blob blob-1"></div>
@@ -106,7 +108,7 @@
       </div>
     </div>
   <div class="button-group flex space-x-2">
-           <button onclick="window.location.href='/debugg'" class="cyber-button px-4 py-1 rounded-lg text-white active">Forum</button>
+           <button onclick="window.location.href='/debugg'" class="cyber-button px-4 py-1 rounded-lg text-white active">Gwantum (beta)</button>
           </div>
 
     <header class="text-center mb-12">
