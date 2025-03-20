@@ -67,13 +67,17 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const seeCommentsButton = document.createElement("button");
     seeCommentsButton.textContent = "See Comments";
-    seeCommentsButton.addEventListener("click", () => toggleComments(commentsSection));
+    seeCommentsButton.addEventListener("click", () => {
+      commentsSection.style.display = commentsSection.style.display === "none" ? "block" : "none";
+    });
     chatElement.appendChild(seeCommentsButton);
     chatElement.appendChild(commentsSection);
 
     const replyButton = document.createElement("button");
     replyButton.textContent = "Reply";
-    replyButton.addEventListener("click", () => toggleReplyBox(replyForm));
+    replyButton.addEventListener("click", () => {
+      replyForm.style.display = replyForm.style.display === "none" ? "block" : "none";
+    });
 
     const replyForm = document.createElement("form");
     replyForm.style.display = "none";
@@ -90,10 +94,23 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const username = getUsername();
       if (replyInput.value.trim()) {
-        await postComment(post.id, replyInput.value.trim(), commentsSection, username, post.username);
-        replyInput.value = "";
-        replyForm.style.display = "none";
-        commentsSection.style.display = "block";
+        try {
+          const res = await fetch(`/api/posts/${post.id}/comments`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ content: replyInput.value.trim(), username }),
+          });
+
+          if (res.ok) {
+            const comment = await res.json();
+            appendComment(comment, commentsSection, post.username);
+            replyInput.value = "";
+            replyForm.style.display = "none";
+            commentsSection.style.display = "block";
+          }
+        } catch (error) {
+          console.error("Error posting comment:", error);
+        }
       }
     });
 
@@ -116,33 +133,6 @@ document.addEventListener("DOMContentLoaded", () => {
     commentElement.appendChild(commentUsername);
     commentElement.appendChild(commentContent);
     commentsSection.appendChild(commentElement);
-  };
-
-  const toggleComments = (commentsSection) => {
-    commentsSection.style.display = commentsSection.style.display === "none" ? "block" : "none";
-  };
-
-  const toggleReplyBox = (replyForm) => {
-    replyForm.style.display = replyForm.style.display === "none" ? "block" : "none";
-  };
-
-  const postComment = async (postId, content, commentsSection, username, postOwner) => {
-    try {
-      const res = await fetch(`/api/posts/${postId}/comments`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, username }),
-      });
-
-      if (res.ok) {
-        const comment = await res.json();
-        appendComment(comment, commentsSection, postOwner);
-      } else {
-        console.error("Failed to post comment:", await res.text());
-      }
-    } catch (error) {
-      console.error("Error posting comment:", error);
-    }
   };
 
   const handleLike = async (postId, likeButton) => {
@@ -195,8 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
         createChat(post);
         chatContent.value = "";
         chatImage.value = "";
-      } else {
-        console.error("Failed to post chat:", await res.text());
       }
     } catch (error) {
       console.error("Error creating post:", error);
