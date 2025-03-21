@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Failed to load posts:", error);
     }
-  };
+  }; //iyfgliygot7t98p9p7t9pt787fr8f768f789o7ft8of7t8o9g7f8o97t9y8908u
 
   const createChat = (post) => {
     const chatElement = document.createElement("div");
