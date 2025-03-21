@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
       username = prompt("Please enter a username:") || "Anonymous";
       localStorage.setItem("username", username);
     }
-    return username; //uk6ri87ti8tr67r7i6r
+    return username; //uk6ri87ti8tr67r7i6r7idt0987t8067fg
   };
 
   const loadPosts = async () => {
