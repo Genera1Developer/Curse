@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Failed to load posts:", error);
     }
-  }; //iyfgliygot7t98p9p7t9pt787fr8f768f789o7ft8of7t8o9g7f8o97t9y8908u
+  };
 
   const createChat = (post) => {
     const chatElement = document.createElement("div");
@@ -50,12 +50,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const likeButton = document.createElement("button");
     likeButton.textContent = `👍 ${post.likes || 0}`;
     likeButton.classList.add("like-button");
-    likeButton.addEventListener("click", async () => handleLike(post.id, likeButton));
+    likeButton.addEventListener("click", () => handleLike(post.id, likeButton));
 
     const dislikeButton = document.createElement("button");
     dislikeButton.textContent = `👎 ${post.dislikes || 0}`;
     dislikeButton.classList.add("dislike-button");
-    dislikeButton.addEventListener("click", async () => handleDislike(post.id, dislikeButton));
+    dislikeButton.addEventListener("click", () => handleDislike(post.id, dislikeButton));
 
     chatElement.appendChild(likeButton);
     chatElement.appendChild(dislikeButton);
@@ -89,18 +89,25 @@ document.addEventListener("DOMContentLoaded", () => {
     replyForm.appendChild(replyInput);
 
     const replySubmit = document.createElement("button");
+    replySubmit.type = "submit";
     replySubmit.textContent = "Post Reply";
     replyForm.appendChild(replySubmit);
 
     replyForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const username = getUsername();
-      if (replyInput.value.trim()) {
+      const content = replyInput.value.trim();
+      if (content) {
         try {
-          const res = await fetch(`/api/posts?postId=${post.id}/comments`, {
+          const res = await fetch("/api/posts", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ content: replyInput.value.trim(), username }),
+            body: JSON.stringify({ 
+              postId: post.id, 
+              content: content, 
+              username: username,
+              isComment: true
+            }),
           });
 
           if (res.ok) {
@@ -139,10 +146,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const handleLike = async (postId, likeButton) => {
     try {
-      const res = await fetch(`/api/posts?action=like&postId=${postId}`, { method: "POST" });
+      const res = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId, action: "like" }),
+      });
       if (res.ok) {
         const data = await res.json();
-        likeButton.textContent = `👍 ${data.likes}`;
+        likeButton.textContent = `👍 ${data.likes || 0}`;
       }
     } catch (error) {
       console.error("Error liking post:", error);
@@ -151,10 +162,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const handleDislike = async (postId, dislikeButton) => {
     try {
-      const res = await fetch(`/api/posts?action=dislike&postId=${postId}`, { method: "POST" });
+      const res = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId, action: "dislike" }),
+      });
       if (res.ok) {
         const data = await res.json();
-        dislikeButton.textContent = `👎 ${data.dislikes}`;
+        dislikeButton.textContent = `👎 ${data.dislikes || 0}`;
       }
     } catch (error) {
       console.error("Error disliking post:", error);
@@ -168,20 +183,30 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!content) return;
 
     const username = getUsername();
-    const formData = new FormData();
-    formData.append("content", content);
-    formData.append("username", username);
-
-    if (chatImage.files.length > 0) {
-      formData.append("image", chatImage.files[0]);
-    }
-
+    
     try {
-      const res = await fetch("/api/posts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, username }),
-      });
+      let formData;
+      let fetchOptions;
+      
+      if (chatImage.files.length > 0) {
+        formData = new FormData();
+        formData.append("content", content);
+        formData.append("username", username);
+        formData.append("image", chatImage.files[0]);
+        
+        fetchOptions = {
+          method: "POST",
+          body: formData
+        };
+      } else {
+        fetchOptions = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content, username })
+        };
+      }
+
+      const res = await fetch("/api/posts", fetchOptions);
 
       if (res.ok) {
         const post = await res.json();
