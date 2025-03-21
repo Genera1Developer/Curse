@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatList = document.getElementById("chat-list");
   const chatContent = document.getElementById("chat-content");
   const chatImage = document.getElementById("chat-image");
-
+  
   const getUsername = () => {
     let username = localStorage.getItem("username");
     if (!username) {
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const loadPosts = async () => {
     try {
-      const res = await fetch("./api/posts.js");
+      const res = await fetch("/api/posts");
       const posts = await res.json();
       chatList.innerHTML = ""; 
       posts.forEach(post => createChat(post));
@@ -63,7 +63,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const commentsSection = document.createElement("div");
     commentsSection.classList.add("comments");
     commentsSection.style.display = "none";
-    post.comments.forEach(comment => appendComment(comment, commentsSection, post.username));
+    if (post.comments && Array.isArray(post.comments)) {
+      post.comments.forEach(comment => appendComment(comment, commentsSection, post.username));
+    }
     
     const seeCommentsButton = document.createElement("button");
     seeCommentsButton.textContent = "See Comments";
@@ -95,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const username = getUsername();
       if (replyInput.value.trim()) {
         try {
-          const res = await fetch(`/debugg/posts/${post.id}/comments`, {
+          const res = await fetch(`/api/posts?postId=${post.id}/comments`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ content: replyInput.value.trim(), username }),
@@ -137,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const handleLike = async (postId, likeButton) => {
     try {
-      const res = await fetch(`/debugg/posts/${postId}/like`, { method: "POST" });
+      const res = await fetch(`/api/posts?action=like&postId=${postId}`, { method: "POST" });
       if (res.ok) {
         const data = await res.json();
         likeButton.textContent = `👍 ${data.likes}`;
@@ -149,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const handleDislike = async (postId, dislikeButton) => {
     try {
-      const res = await fetch(`/debugg/posts/${postId}/dislike`, { method: "POST" });
+      const res = await fetch(`/api/posts?action=dislike&postId=${postId}`, { method: "POST" });
       if (res.ok) {
         const data = await res.json();
         dislikeButton.textContent = `👎 ${data.dislikes}`;
@@ -175,9 +177,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      const res = await fetch("/debugg/posts", {
+      const res = await fetch("/api/posts", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, username }),
       });
 
       if (res.ok) {
