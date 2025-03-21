@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const loadPosts = async () => {
     try {
-      const res = await fetch("/debugg/posts");
+      const res = await fetch("./api/posts.js");
       const posts = await res.json();
       chatList.innerHTML = ""; 
       posts.forEach(post => createChat(post));
