@@ -100,3 +100,6 @@ Extra: ```   "id": "1232085058769129522",
   "primary_guild": null, ```
 
   # I ADDED MY OWN FORUM!!!!!
+
+  # Games
+  *soon* to be added from **https://gitlab.com/kaioxdev/legacy-assets/-/tree/main?ref_type=heads**
