@@ -1,326 +1,227 @@
+:root {
+    --primary-glow: rgb(0, 255, 234);
+    --secondary-glow: rgb(0, 136, 255);
+    --accent-glow: rgb(255, 0, 234);
+    --background-dark: #0a0a0a;
+    --background-light: #1a1a2e;
+    
+    --transition-speed: 0.3s;
+    --blur-intensity: 10px;
+}
 
+.light {
+    --primary-glow: rgb(0, 195, 255);
+    --secondary-glow: rgb(0, 89, 255);
+    --accent-glow: rgb(255, 89, 195);
+}
 
-        :root {
-            --primary-glow: rgb(0, 255, 234);
-            --secondary-glow: rgb(0, 136, 255);
-        }
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    transition: all var(--transition-speed) ease;
+}
 
-        .light {
-            --primary-glow: rgb(0, 195, 255);
-            --secondary-glow: rgb(0, 89, 255);
-        }
+body {
+    background-color: var(--background-dark);
+    color: white;
+    font-family: 'Space Mono', monospace, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
 
-        body {
-            background-color: #0a0a0a;
-            transition: background-color 0.3s ease;
-        }
+.light body {
+    background-color: var(--background-light);
+    color: #333;
+}
 
-        .light body {
-            background-color: #1a1a2e;
-        }
+.cyber-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    perspective: 1000px;
+}
 
-        .cyber-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
+.cyber-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.5;
+    animation: float 25s infinite cubic-bezier(0.45, 0.05, 0.55, 0.95);
+    transform-style: preserve-3d;
+}
 
-        .cyber-blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.4;
-            animation: float 20s infinite ease-in-out;
-        }
+.blob-1 {
+    width: 500px;
+    height: 500px;
+    background: var(--primary-glow);
+    top: 20%;
+    left: 20%;
+    animation-delay: 0s;
+}
 
-        .blob-1 {
-            width: 400px;
-            height: 400px;
-            background: var(--primary-glow);
-            top: 20%;
-            left: 20%;
-            animation-delay: 0s;
-        }
+.blob-2 {
+    width: 400px;
+    height: 400px;
+    background: var(--secondary-glow);
+    top: 50%;
+    right: 20%;
+    animation-delay: -5s;
+}
 
-        .blob-2 {
-            width: 300px;
-            height: 300px;
-            background: var(--secondary-glow);
-            top: 50%;
-            right: 20%;
-            animation-delay: -5s;
-        }
+.blob-3 {
+    width: 300px;
+    height: 300px;
+    background: var(--accent-glow);
+    bottom: 10%;
+    left: 30%;
+    animation-delay: -10s;
+}
 
-        .blob-3 {
-            width: 250px;
-            height: 250px;
-            background: var(--primary-glow);
-            bottom: 10%;
-            left: 30%;
-            animation-delay: -10s;
-        }
+@keyframes float {
+    0%, 100% { 
+        transform: 
+            translate3d(0, 0, 0) 
+            rotate(0deg) 
+            scale(1);
+    }
+    25% { 
+        transform: 
+            translate3d(50px, 50px, 100px) 
+            rotate(90deg) 
+            scale(1.1);
+    }
+    50% { 
+        transform: 
+            translate3d(0, 100px, -100px) 
+            rotate(180deg) 
+            scale(0.9);
+    }
+    75% { 
+        transform: 
+            translate3d(-50px, 50px, 50px) 
+            rotate(270deg) 
+            scale(1.05);
+    }
+}
 
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(50px, 50px) rotate(90deg); }
-            50% { transform: translate(0, 100px) rotate(180deg); }
-            75% { transform: translate(-50px, 50px) rotate(270deg); }
-        }
+.cyber-card {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(var(--blur-intensity));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all var(--transition-speed) ease;
+    overflow: hidden;
+}
 
-        .cyber-card {
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
+.light .cyber-card {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
 
-        .light .cyber-card {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+.cyber-card:hover {
+    transform: translateY(-10px) rotate(1deg);
+    box-shadow: 0 10px 20px var(--primary-glow);
+}
 
-        .cyber-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 20px var(--primary-glow);
-        }
+.cyber-input {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: white;
+    padding: 10px 15px;
+    outline: none;
+}
 
-        .cyber-input {
-            background: rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            transition: all 0.3s ease;
-        }
+.light .cyber-input {
+    background: rgba(255, 255, 255, 0.2);
+    color: #333;
+}
 
-        .light .cyber-input {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+.cyber-input:focus {
+    transform: scale(1.02);
+    box-shadow: 0 0 20px var(--primary-glow);
+    border-color: var(--primary-glow);
+}
 
-        .cyber-input:focus {
-            transform: scale(1.02);
-            box-shadow: 0 0 20px var(--primary-glow);
-        }
+.cyber-button {
+    background: linear-gradient(45deg, var(--primary-glow), var(--secondary-glow));
+    border: none;
+    border-radius: 8px;
+    color: black;
+    padding: 12px 24px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
 
-        .cyber-button {
-            background: linear-gradient(45deg, var(--primary-glow), var(--secondary-glow));
-            transition: all 0.3s ease;
-        }
+.cyber-button:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px var(--primary-glow);
+}
 
-        .cyber-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 15px var(--primary-glow);
-        }
+.toggle {
+    width: 60px;
+    height: 30px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #333, #111);
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
 
-        .theme-icon-dark {
-            display: none;
-        }
+.toggle .circle {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(45deg, var(--primary-glow), var(--secondary-glow));
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
 
-        .light .theme-icon-dark {
-            display: block;
-        }
+.proxy-container {
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
 
-        .light .theme-icon-light {
-            display: none;
-        }
+@media (max-width: 768px) {
+    .cyber-blob {
+        opacity: 0.3;
+        filter: blur(60px);
+    }
+    
+    .cyber-card {
+        margin: 10px;
+        padding: 15px;
+    }
+}
 
-        .toggle {
-            width: 50px;
-            height: 25px;
-            border-radius: 25px;
-            background-color: #ccc;
-            transition: background-color 0.3s ease;
-            position: relative;
-        }
+.console-container {
+    background: rgba(0, 0, 0, 0.9);
+    border-top: 2px solid var(--primary-glow);
+    border-radius: 16px 16px 0 0;
+}
 
-        .toggle .circle {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 20px;
-            height: 20px;
-            background-color: white;
-            border-radius: 50%;
-            transition: left 0.3s ease;
-        }
+.console-log .log-item {
+    font-family: 'Fira Code', monospace;
+    border-left: 4px solid transparent;
+    padding-left: 10px;
+    transition: all var(--transition-speed) ease;
+}
 
-        .toggle-on {
-            background-color: #2ecc71;
-        }
+.console-log .log-item.error {
+    border-left-color: #ff4444;
+}
 
-        .toggle-on .circle {
-            left: 26px;
-        }
+.console-log .log-item.info {
+    border-left-color: #44ff44;
+}
 
-        .toggle-off {
-            background-color: #e74c3c;
-        }
-
-        .toggle-off .circle {
-            left: 2px;
-        }
-
-        .proxy-container {
-            position: relative;
-            margin-top: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.5rem;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            height: 600px;
-        }
-
-        .proxy-container.fullscreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            height: 100vh;
-            z-index: 1000;
-            background: #0a0a0a;
-        }
-
-        #proxyFrame {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: white;
-        }
-
-        .proxy-controls {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1001;
-            display: flex;
-            gap: 8px;
-        }
-
-        .control-btn {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--primary-glow);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .control-btn:hover {
-            background: var(--primary-glow);
-            color: black;
-        }
-
-        .console-container {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 300px;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            font-family: monospace;
-            padding: 1rem;
-            overflow-y: auto;
-            z-index: 1000;
-            transition: all 0.3s ease;
-            display: none;
-            transform: translateY(100%);
-        }
-
-        .console-container.visible {
-            transform: translateY(0);
-        }
-
-        .light .console-container {
-            background: rgba(255, 255, 255, 0.8);
-            color: black;
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
-        }
-
-        .console-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .console-header button {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--primary-glow);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .light .console-header button {
-            background: rgba(0, 0, 0, 0.1);
-            color: black;
-        }
-
-        .console-header button:hover {
-            background: var(--primary-glow);
-            color: black;
-        }
-
-        .console-tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 1rem;
-        }
-
-        .console-tab {
-            padding: 4px 8px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .console-tab.active {
-            background: var(--primary-glow);
-            color: black;
-        }
-
-        .console-content {
-            display: none;
-        }
-
-        .console-content.active {
-            display: block;
-        }
-
-        .console-log {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-
-        .console-log .log-item {
-            margin-bottom: 0.5rem;
-        }
-
-        .console-log .log-item.error {
-            color: #ff4444;
-        }
-
-        .console-log .log-item.info {
-            color: #44ff44;
-        }
-
-        .console-log .log-item.warn {
-            color: #ffcc00;
-        }
-
-        .detached {
-            position: absolute;
-            resize: both;
-            overflow: auto;
-        }
+.console-log .log-item.warn {
+    border-left-color: #ffcc00;
+}
