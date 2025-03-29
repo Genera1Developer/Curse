@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark-theme">
 <head>
-
   <meta charset="UTF-8">
   <meta http-equiv="X-Frame-Options" content="DENY">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +14,7 @@
     .button-group button.active {
       background: var(--primary-glow);
       color: white;
+    }
     
     .particles-blur {
       filter: blur(3px);
@@ -50,6 +50,38 @@
       border: none;
       overflow: auto;
     }
+    
+    /* Toggle switch styling for da worky*/
+    .toggle {
+      position: relative;
+      width: 60px;
+      height: 30px;
+      border-radius: 30px;
+      background: linear-gradient(135deg, #333, #111);
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      display: inline-block;
+    }
+
+    .toggle .circle {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(45deg, var(--primary-glow), var(--secondary-glow));
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .toggle.toggle-on .circle {
+      transform: translateX(30px);
+    }
+
+    .light-theme .toggle {
+      background: linear-gradient(135deg, #e0e0e0, #ccc);
+    }
   </style>
 </head>
 <body>
@@ -82,17 +114,17 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
       </svg>
     </button>
-<button 
-  id="themeSelector" 
-  class="fixed top-16 right-4 cyber-button p-2 rounded-full text-white"
-  aria-label="Select theme"
->
-  <img 
-    src="./assets/185053_paint_brush_icon.png" 
-    alt="Theme Selector" 
-    class="w-6 h-6"
-  />
-</button>
+    <button 
+      id="themeSelector" 
+      class="fixed top-16 right-4 cyber-button p-2 rounded-full text-white"
+      aria-label="Select theme"
+    >
+      <img 
+        src="./assets/185053_paint_brush_icon.png" 
+        alt="Theme Selector" 
+        class="w-6 h-6"
+      />
+    </button>
     <div id="themeDropdown" class="theme-dropdown">
       <div class="theme-item" data-theme="default">
         <div class="theme-preview" style="background: linear-gradient(135deg, #1e3a8a, #1e40af);"></div>
@@ -107,9 +139,9 @@
         Sunset
       </div>
     </div>
-  <div class="button-group flex space-x-2">
-           <button onclick="window.location.href='/debugg'" class="cyber-button px-4 py-1 rounded-lg text-white active">Gwantum (beta)</button>
-          </div>
+    <div class="button-group flex space-x-2">
+      <button onclick="window.location.href='/debugg'" class="cyber-button px-4 py-1 rounded-lg text-white active">Gwantum (beta)</button>
+    </div>
 
     <header class="text-center mb-12">
       <h1 class="text-4xl font-bold mb-4 text-red" style="text-shadow: 0 0 10px var(--primary-glow)">
@@ -244,11 +276,16 @@
           <span class="text-gray-300">Particle Blur</span>
           <div id="particleBlurToggle" class="toggle toggle-off">
             <div class="circle"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="theme/particles.js"></script>
-<script> src="/adblocker/ublock.js"</script>
-<script> src="/adblocker/curseblock.js"</script>
-<script> src="/adblocker/OreoFiltering.js"</script>
+  <script src="/adblocker/ublock.js"></script>
+  <script src="/adblocker/curseblock.js"></script>
+  <script src="/adblocker/OreoFiltering.js"></script>
   <script>
     const html = document.documentElement;
     const themeToggle = document.getElementById('themeToggle');
@@ -264,9 +301,20 @@
     const minimizeBtn = document.getElementById('minimizeBtn');
     const qualityToggle = document.getElementById('qualityToggle');
     const particleBlurToggle = document.getElementById('particleBlurToggle');
+    const iframeBtn = document.getElementById('iframeBtn');
+    const newWindowBtn = document.getElementById('newWindowBtn');
 
     let useIframe = true;
-    let isAdBlockEnabled = false;
+    let isAdBlockEnabled = false
+    function toggleSwitch(toggleElement) {
+      toggleElement.classList.toggle('toggle-on');
+      toggleElement.classList.toggle('toggle-off');
+      return toggleElement.classList.contains('toggle-on');
+    }
+
+    adBlockToggle.addEventListener('click', () => {
+      isAdBlockEnabled = toggleSwitch(adBlockToggle);
+    });
 
     brightnessSlider.addEventListener('input', (e) => {
       const value = e.target.value;
@@ -284,20 +332,33 @@
     });
 
     qualityToggle.addEventListener('click', () => {
-      qualityToggle.classList.toggle('toggle-on');
-      qualityToggle.classList.toggle('toggle-off');
+      toggleSwitch(qualityToggle);
       document.body.classList.toggle('quality-reduced');
     });
 
     particleBlurToggle.addEventListener('click', () => {
-      particleBlurToggle.classList.toggle('toggle-on');
-      particleBlurToggle.classList.toggle('toggle-off');
+      toggleSwitch(particleBlurToggle);
       document.getElementById('canvas').classList.toggle('particles-blur');
     });
 
+
+    iframeBtn.addEventListener('click', () => {
+      useIframe = true;
+      iframeBtn.classList.add('active');
+      newWindowBtn.classList.remove('active');
+    });
+
+    newWindowBtn.addEventListener('click', () => {
+      useIframe = false;
+      newWindowBtn.classList.add('active');
+      iframeBtn.classList.remove('active');
+    });
+
+ 
     themeToggle.addEventListener('click', () => {
-      html.classList.toggle('light');
-      localStorage.setItem('theme', html.classList.contains('light') ? 'light' : 'dark');
+      html.classList.toggle('light-theme');
+      html.classList.toggle('dark-theme');
+      localStorage.setItem('theme', html.classList.contains('light-theme') ? 'light' : 'dark');
     });
 
     themeSelector.addEventListener('click', () => {
@@ -316,24 +377,39 @@
         } else if (selectedTheme === 'sunset') {
           themeLink.href = '/theme/sunset.css';
         }
-        localStorage.setItem('theme', selectedTheme);
+        localStorage.setItem('theme-style', selectedTheme);
         themeDropdown.classList.remove('active');
       });
     });
 
-    const savedTheme = localStorage.getItem('theme') || 'default';
-    html.setAttribute('data-theme', savedTheme);
-    (function() {
-      let themeLink = document.getElementById('themeStylesheet');
-      if (savedTheme === 'default') {
-        themeLink.href = '/theme/default.css';
-      } else if (savedTheme === 'forest') {
-        themeLink.href = '/theme/forest.css';
-      } else if (savedTheme === 'sunset') {
-        themeLink.href = '/theme/sunset.css';
-      }
-    })();
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+      html.classList.add('light-theme');
+      html.classList.remove('dark-theme');
+    } else {
+      html.classList.add('dark-theme');
+      html.classList.remove('light-theme');
+    }
 
+    const savedThemeStyle = localStorage.getItem('theme-style') || 'default';
+    html.setAttribute('data-theme', savedThemeStyle);
+    let themeLink = document.getElementById('themeStylesheet');
+    if (savedThemeStyle === 'default') {
+      themeLink.href = '/theme/default.css';
+    } else if (savedThemeStyle === 'forest') {
+      themeLink.href = '/theme/forest.css';
+    } else if (savedThemeStyle === 'sunset') {
+      themeLink.href = '/theme/sunset.css';
+    } //I still dont have da themes made WAHHHHHHHH
+
+    // Text size changerer
+    const textSizeSlider = document.getElementById('textSizeSlider');
+    textSizeSlider.addEventListener('input', (e) => {
+      const value = e.target.value;
+      document.documentElement.style.fontSize = `${value}px`;
+    });
+
+    // Search shtuff
     searchForm.addEventListener('submit', function(e) {
       e.preventDefault();
       const query = searchInput.value.trim();
@@ -374,10 +450,13 @@
     function isValidUrl(string) {
       try {
         new URL(string);
+        return true;
       } catch (_) {
-        return false;  
+        if (/^[\w-]+(\.[\w-]+)+([\/\?].*)?$/.test(string)) {
+          return true;
+        }
+        return false;
       }
-      return true;
     }
   </script>
 </body>
