@@ -31,9 +31,10 @@ S*S.    S*S.     .S*S  S*S    S%S    .S*P  S*S.          S*S    S*S  S*S        
     - Specify said embedd to /api/proxy.js?q=${url}
     - Create a simple textbox, with the contents set to {url}
     - Create a way such as the enter button or a go button to utilize the redirect
+    - Check through window.js or proxy.js, and make sure the directories ae updated to fit your repository
 
   By the end of all this, you should be good to go.  
-  When testing, check that the URL switches to {yoursite}//api/proxy.js?q={https}%3A%2F%2F{site}
+  When testing, check that the URL switches to {yoursite}/api/{curse proxy}.js?q={https}%3A%2F%2F{site}
 
 >?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?>?
 
