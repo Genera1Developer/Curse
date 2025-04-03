@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from 'axios'; // Edlerly ass version but pretty much the same
 import express from 'express';
 import path from 'path';
 import rateLimit from 'express-rate-limit';
@@ -11,13 +11,11 @@ const __dirname = dirname(__filename);
 const app = express();
 const port = process.env.PORT || 3000;
 
-
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 500,
 });
 app.use(limiter);
-
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -34,51 +32,35 @@ const isAbsoluteURL = (url) => {
 
 const createProxyUrl = (url, baseUrl) => {
   if (!url) return url;
-  if (url.startsWith('/window.js')) return url; 
-
+  if (url.startsWith('/api/flow.js')) return url;
   if (isAbsoluteURL(url)) {
-    return `/extra/moreextra/window.js?q=${encodeURIComponent(url)}`;
+    return `/api/flow.js?q=${encodeURIComponent(url)}`;
   }
-
   if (baseUrl) {
     const base = new URL(baseUrl);
     const absoluteUrl = new URL(url, base).href;
-    return `/api/window.js?q=${encodeURIComponent(absoluteUrl)}`;
+    return `/api/flow.js?q=${encodeURIComponent(absoluteUrl)}`;
   }
-
   return url;
 };
 
-app.get('/api/window.js', async (req, res) => {
-  const { q } = req.query; 
+app.get('/api/flow.js', async (req, res) => {
+  const { q } = req.query;
+
   if (!q) {
     return res.status(400).json({ error: 'Missing query parameter: q' });
   }
 
   try {
     const response = await axios.get(q, {
-  responseType: 'arraybuffer',
-  headers: {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-    'Referer': new URL(q).origin,
-    'Accept': 'text/html,application/xhtml+xml,application/xml,application/javascript,text/javascript,text/css,text/plain,image/jpeg,image/png,image/gif,image/webp,image/svg+xml,image/avif,image/apng,font/woff,font/woff2,font/ttf,font/otf,application/json,*/*;q=0.8', //holy sigma that took a long time to type with one hand
-    'Accept-Language': 'en-US,en;q=0.9',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Cache-Control': 'no-cache',
-    'Pragma': 'no-cache',
-    'DNT': '1',
-    'Connection': 'keep-alive',
-    'Upgrade-Insecure-Requests': '1',
-    'Sec-Fetch-Dest': 'document',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-Site': 'none',
-    'Sec-Fetch-User': '?1'
-  },
-  maxRedirects: 5,
-  timeout: 15000,
-  decompress: true,
-  validateStatus: status => status < 400 || status === 404
-});
+      responseType: 'arraybuffer',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+        'Referer': q,
+        'Accept': req.headers['accept'] || '*/*',
+        'Accept-Language': req.headers['accept-language'] || 'en-US,en;q=0.9',
+      }
+    });
 
     let contentType = response.headers['content-type'] || '';
     res.setHeader('Content-Type', contentType);
@@ -97,14 +79,12 @@ app.get('/api/window.js', async (req, res) => {
         (match, quote, url) => `url(${quote}${createProxyUrl(url, q)}${quote})`
       );
 
-     
       htmlContent = htmlContent.replace(
         /<form([^>]*)action="([^"]*)"([^>]*)>/g,
         (match, before, url, after) =>
           `<form${before}action="${createProxyUrl(url, q)}"${after}>`
       );
 
-      
       htmlContent = htmlContent.replace(
         /window\.location\.href\s*=\s*['"]([^'"]+)['"]/g,
         (match, url) => `window.location.href='${createProxyUrl(url, q)}'`
@@ -136,6 +116,7 @@ app.get('/api/window.js', async (req, res) => {
 });
 
 app.use(express.static('public'));
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
