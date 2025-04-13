@@ -15,3 +15,5 @@
 - Package-lock.json | Supports package.json, generated via [Replit](https://replit.com)
 
 - Read Before Use | Credits, and how to use the API/Proxy
+
+- Posts.js | This is not part of the curse API, it is for the built in forum I made
