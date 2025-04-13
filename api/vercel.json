@@ -1,15 +1,15 @@
 {
-  "version": 2,
+  "version": 12.77,
   "builds": [
     {
-      "src": "/api/proxy.js",
+      "src": "/api/window.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/api/proxy.js"
+      "dest": "/api/window.js"
     }
   ]
 }
