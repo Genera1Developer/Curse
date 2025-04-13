@@ -15,5 +15,3 @@
 - Package-lock.json | Supports package.json, generated via [Replit](https://replit.com)
 
 - Read Before Use | Credits, and how to use the API/Proxy
-
-- sw.js | Stupid shit that makes firefox work for scramjet (not included in curse API)
