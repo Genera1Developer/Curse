@@ -1,6 +1,6 @@
 {
   "name": "Curse-Static",
-  "version": "2.5.9",
+  "version": "12.77",
   "description": "Curse Static Web Proxy",
   "type": "module",
   "main": "window.js",
