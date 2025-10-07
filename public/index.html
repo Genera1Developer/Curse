@@ -420,10 +420,10 @@
           url = query.startsWith('http://') || query.startsWith('https://') ? query : `https://${query}`;
           
           if (useIframe) {
-            proxyFrame.src = `/api/window.js?q=${encodeURIComponent(url)}`;
+            proxyFrame.src = `/api/flow.js?q=${encodeURIComponent(url)}`;
             proxyContainer.classList.remove('hidden');
           } else {
-            window.open(`/api/window.js?q=${encodeURIComponent(url)}`, '_blank');
+            window.open(`/api/flow.js?q=${encodeURIComponent(url)}`, '_blank');
           }
         } else {
           const searchEngines = [
@@ -438,10 +438,10 @@
           const searchUrl = `${randomEngine}${encodeURIComponent(query)}&from=os&clid=1836588`;
 
           if (useIframe) {
-            proxyFrame.src = `/api/window.js?q=${encodeURIComponent(searchUrl)}`;
+            proxyFrame.src = `/api/flow.js?q=${encodeURIComponent(searchUrl)}`;
             proxyContainer.classList.remove('hidden');
           } else {
-            window.open(`/api/window.js?q=${encodeURIComponent(searchUrl)}`, '_blank');
+            window.open(`/api/flow.js?q=${encodeURIComponent(searchUrl)}`, '_blank');
           }
         }
       }
