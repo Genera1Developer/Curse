@@ -5,8 +5,8 @@
   "type": "module",
   "main": "window.js",
   "scripts": {
-    "start": "node window.js",
-    "dev": "nodemon window.js"
+    "start": "node flow.js",
+    "dev": "nodemon flow.js"
   },
   "dependencies": {
     "express": "^4.18.2",
