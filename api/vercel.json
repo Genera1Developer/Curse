@@ -2,14 +2,14 @@
   "version": 12.77,
   "builds": [
     {
-      "src": "/api/window.js",
+      "src": "/api/flow.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/api/window.js"
+      "dest": "/api/flow.js"
     }
   ]
 }
